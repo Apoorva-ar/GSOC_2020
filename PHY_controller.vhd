@@ -1,4 +1,4 @@
--- Engineer: Rahul vyas
+
 -- (MASTER LVDS_SERDES with FIFO buffer)
 
 LIBRARY ieee;
