@@ -12,13 +12,15 @@ ENTITY sclk_gen IS
     PORT (
         i_sys_clk      : IN std_logic;
         i_sys_rst      : IN std_logic;
-        i_spi_start    : IN std_logic;
+        i_PHY_start    : IN std_logic;
         i_clk_period   : IN std_logic_vector(7 DOWNTO 0);
         i_setup_cycles : IN std_logic_vector(7 DOWNTO 0);
         i_hold_cycles  : IN std_logic_vector(7 DOWNTO 0);
         i_tx2tx_cycles : IN std_logic_vector(7 DOWNTO 0);
         i_cpol         : IN std_logic;
-        o_ss_start     : OUT std_logic;
+        o_ss_start     : OUT std_logic_vector(1 downto 0);
+        write_tr_en    : IN std_logic;
+        read_tr_en     : IN std_logic;
         o_sclk         : OUT std_logic
     );
 END sclk_gen;
@@ -95,7 +97,7 @@ BEGIN
         IF i_sys_rst = '1' THEN
             spi_start_i <= '0';
         ELSIF i_sys_clk'event AND i_sys_clk = '1' THEN
-            spi_start_i <= i_spi_start;
+            spi_start_i <= i_PHY_start;
         END IF;
     END PROCESS;
     ----------------------------------------------------------------------------------------------------
@@ -131,20 +133,25 @@ BEGIN
             spim_clk_state_i      <= SPIM_IDLE_STATE;
             delay_count_start_i   <= '0';
             sclk_count_start_i    <= '0';
-            o_ss_start            <= '1';
+            o_ss_start            <= "11";
             falling_count_start_i <= '0';
         ELSIF (rising_edge(i_sys_clk)) THEN
             CASE (spim_clk_state_i) IS
                 WHEN SPIM_IDLE_STATE =>
-                    IF (spi_start_i = '1') THEN -- registered input
+                    IF (spi_start_i = '1') AND write_tr_en = '1' THEN -- registered input
                         spim_clk_state_i    <= SPIM_SETUP_STATE;
                         delay_count_start_i <= '1';
-                        o_ss_start          <= '0';
+                        o_ss_start          <= "01";
+                        sclk_count_start_i  <= '0';
+                    ELSIF (spi_start_i = '1') AND read_tr_en = '1' THEN -- registered input
+                        spim_clk_state_i    <= SPIM_SETUP_STATE;
+                        delay_count_start_i <= '1';
+                        o_ss_start          <= "10";
                         sclk_count_start_i  <= '0';
                     ELSE
                         spim_clk_state_i      <= SPIM_IDLE_STATE;
                         delay_count_start_i   <= '0';
-                        o_ss_start            <= '1';
+                        o_ss_start            <= "11";
                         falling_count_start_i <= '0';
                         sclk_count_start_i    <= '0';
                     END IF;
@@ -170,7 +177,7 @@ BEGIN
                     IF (hold_delay_done_i = '1') THEN
                         delay_count_start_i <= '0';
                         spim_clk_state_i    <= SPIM_TX2TX_WAIT_STATE;
-                        o_ss_start          <= '1';
+                        o_ss_start          <= "11";
                         sclk_count_start_i  <= '0';
                     ELSE
                         spim_clk_state_i    <= SPIM_HOLD_STATE;
@@ -188,7 +195,7 @@ BEGIN
                     spim_clk_state_i      <= SPIM_IDLE_STATE;
                     delay_count_start_i   <= '0';
                     sclk_count_start_i    <= '0';
-                    o_ss_start            <= '1';
+                    o_ss_start            <= "11";
                     falling_count_start_i <= '0';
             END CASE;
         END IF;
