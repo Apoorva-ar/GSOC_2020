@@ -26,11 +26,11 @@ ENTITY PHY_controller IS
         LVDS_IO_debug : INOUT std_logic;
         sclk_debug    : OUT std_logic;
         ------------- DATA IO channel ------------
-        data_in      : IN std_logic(WORD_SIZE - 1 DOWNTO 0);
+        data_in      : IN std_logic_vector(Data_Length - 1 DOWNTO 0);
         valid_in     : IN std_logic;
         write_enable : IN std_logic;
         write_ready  : OUT std_logic;
-        data_out     : OUT std_logic(WORD_SIZE - 1 DOWNTO 0);
+        data_out     : OUT std_logic_vector(Data_Length - 1 DOWNTO 0);
         valid_out    : OUT std_logic;
         read_enable  : IN std_logic;
         ------------- Test Intefaces --------------
@@ -54,12 +54,13 @@ ARCHITECTURE behavioral OF PHY_controller IS
             i_sys_clk : IN std_logic; -- system clock
             i_sys_rst : IN std_logic; -- system reset
 
-            i_data : IN std_logic_vector(DATA_SIZE - 1 DOWNTO 0);  -- Input data
-            o_data : OUT std_logic_vector(DATA_SIZE - 1 DOWNTO 0); --output data
-
-            i_csn : IN std_logic; -- chip select for PHY master transaction Data IO
-            i_wr  : IN std_logic; -- Active Low Write, Active High Read
-            i_rd  : IN std_logic; -- Active Low Write, Active High Read
+            i_data     : IN std_logic_vector(Data_Length - 1 DOWNTO 0);  -- Input data
+            o_data     : OUT std_logic_vector(Data_Length - 1 DOWNTO 0); --output data
+            i_wr_tr_en : IN std_logic;                                   -- write transaction enable
+            i_rd_tr_en : IN std_logic;                                   -- read transaction enable
+            i_csn      : IN std_logic;                                   -- chip select for PHY master transaction Data IO
+            i_wr       : IN std_logic;                                   -- Active Low Write, Active High Read
+            i_rd       : IN std_logic;                                   -- Active Low Write, Active High Read
 
             o_tx_ready : OUT std_logic; -- Transmitter ready, can write another data
             o_rx_ready : OUT std_logic; -- Receiver ready, can read data
@@ -85,14 +86,14 @@ ARCHITECTURE behavioral OF PHY_controller IS
 
     COMPONENT FIFOx64
         PORT (
-            Data        : IN std_logic_vector(47 DOWNTO 0);
+            Data        : IN std_logic_vector(Data_Length - 1 DOWNTO 0);
             WrClock     : IN std_logic;
             RdClock     : IN std_logic;
             WrEn        : IN std_logic;
             RdEn        : IN std_logic;
             Reset       : IN std_logic;
             RPReset     : IN std_logic;
-            Q           : OUT std_logic_vector(47 DOWNTO 0);
+            Q           : OUT std_logic_vector(Data_Length - 1 DOWNTO 0);
             Empty       : OUT std_logic;
             Full        : OUT std_logic;
             AlmostEmpty : OUT std_logic;
@@ -103,26 +104,27 @@ ARCHITECTURE behavioral OF PHY_controller IS
     ----------------------------------------------------------------------------------------
     ----------------------------- System Signals -------------------------------------------
     ----------------------------------------------------------------------------------------
-    SIGNAL data_valid_recieved : std_logic                                := '0';
-    SIGNAL fifo_data_request   : std_logic                                := '0';
-    SIGNAL tx_ready_M          : STD_LOGIC                                := '0';
-    SIGNAL tx_error_M          : STD_LOGIC                                := '0';
-    SIGNAL interrupt           : STD_LOGIC                                := '0';
-    SIGNAL wait_count          : std_logic_vector(9 DOWNTO 0)             := (OTHERS => '0');
-    SIGNAL intr_data_wait      : std_logic                                := '0';
-    SIGNAL intr_word_wait      : std_logic                                := '0';
-    SIGNAL setup_word_wait     : std_logic                                := '0';
-    SIGNAL request_word        : std_logic                                := '0';
-    SIGNAL valid_data          : std_logic                                := '0';
-    SIGNAL master_cs           : std_logic                                := '0';
-    SIGNAL data_valid          : std_logic                                := '0';
-    SIGNAL chip_select         : std_logic                                := '0';
-    SIGNAL start_trans         : std_logic                                := '0';
-    SIGNAL start_wait_counter  : std_logic                                := '0';
-    SIGNAL slave_CS            : std_logic_vector(3 DOWNTO 0)             := (OTHERS => '0');
-    SIGNAL word_reg            : std_logic_vector(WORD_SIZE - 1 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL DATA_Valid_SPI_M_I  : std_logic                                := '0';
-    TYPE state_S IS(IDLE, TX_WAIT, LATCH_WORD, LATCH_D1, TRANSMIT_D1, wait_transmission_D1,END_TRANSACTION, SETUP_WORD, RX_transaction, WAIT_RX_D1,RX_latch_state );
+    SIGNAL data_valid_received : std_logic                                  := '0';
+    SIGNAL fifo_data_request   : std_logic                                  := '0';
+    SIGNAL tx_ready_M          : STD_LOGIC                                  := '0';
+    SIGNAL rx_ready_M          : STD_LOGIC                                  := '0';
+    SIGNAL tx_error_M          : STD_LOGIC                                  := '0';
+    SIGNAL interrupt           : STD_LOGIC                                  := '0';
+    SIGNAL wait_count          : std_logic_vector(9 DOWNTO 0)               := (OTHERS => '0');
+    SIGNAL intr_data_wait      : std_logic                                  := '0';
+    SIGNAL intr_word_wait      : std_logic                                  := '0';
+    SIGNAL setup_word_wait     : std_logic                                  := '0';
+    SIGNAL request_word        : std_logic                                  := '0';
+    SIGNAL valid_data          : std_logic                                  := '0';
+    SIGNAL master_cs           : std_logic                                  := '0';
+    SIGNAL data_valid          : std_logic                                  := '0';
+    SIGNAL chip_select         : std_logic                                  := '0';
+    SIGNAL start_trans         : std_logic                                  := '0';
+    SIGNAL start_wait_counter  : std_logic                                  := '0';
+    SIGNAL slave_CS            : std_logic_vector(3 DOWNTO 0)               := (OTHERS => '0');
+    SIGNAL word_reg            : std_logic_vector(Data_Length - 1 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL DATA_Valid_SPI_M_I  : std_logic                                  := '0';
+    TYPE state_S IS(IDLE, TX_WAIT, LATCH_WORD, LATCH_D1, TRANSMIT_D1, wait_transmission_D1, END_TRANSACTION, SETUP_WORD, RX_transaction, WAIT_RX_D1, RX_latch_state);
     SIGNAL state_transaction : state_S := IDLE;
     TYPE state_S_2 IS(IDLE, counter_state, WAIT_empty_state);
     SIGNAL state_FIFO        : state_S_2                                  := counter_state;
@@ -130,17 +132,22 @@ ARCHITECTURE behavioral OF PHY_controller IS
     SIGNAL Start_SPI_M       : std_logic                                  := '0';
     SIGNAL Data_SPI_M_I      : std_logic_vector(Data_Length - 1 DOWNTO 0) := (OTHERS => '0');
     SIGNAL SPI_data_in       : std_logic_vector(Data_Length - 1 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL data_out_fifo     : std_logic_vector(47 DOWNTO 0)              := (OTHERS => '0');
-    SIGNAL FIFO_data_out     : std_logic_vector(47 DOWNTO 0)              := (OTHERS => '0');
+    SIGNAL data_out_fifo     : std_logic_vector(Data_Length - 1 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL FIFO_data_out     : std_logic_vector(Data_Length - 1 DOWNTO 0) := (OTHERS => '0');
     SIGNAL SPI_M_CS          : std_logic                                  := '1'; -- SPI slave chip select
-    SIGNAL data_in_fifo      : std_logic_vector(47 DOWNTO 0)              := (OTHERS => '0');
+    SIGNAL data_in_fifo      : std_logic_vector(Data_Length - 1 DOWNTO 0) := (OTHERS => '0');
     SIGNAL FIFO_empty_signal : std_logic                                  := '0';
     SIGNAL FIFO_almost_empty : std_logic                                  := '0';
     SIGNAL FIFO_almost_full  : std_logic                                  := '0';
     SIGNAL full_fifo         : std_logic                                  := '0';
     SIGNAL valid_fifo_in     : std_logic                                  := '0';
-    SIGNAL temp              : std_logic_vector(47 DOWNTO 0);
+    SIGNAL temp              : std_logic_vector(Data_Length - 1 DOWNTO 0);
     SIGNAL valid_temp        : std_logic := '0';
+    SIGNAL PHY_data_in       : std_logic_vector(Data_Length - 1 DOWNTO 0);
+    SIGNAL write_valid_data  : std_logic := '0';
+    SIGNAL read_valid_data   : std_logic := '0';
+    SIGNAL M_data_out        : std_logic_vector(Data_Length - 1 DOWNTO 0);
+    SIGNAL data_received     : std_logic_vector(Data_Length - 1 DOWNTO 0);
 BEGIN
 
     ----------------------------------------------------------------------------------------
@@ -150,7 +157,7 @@ BEGIN
     USER_FIFO_block : FIFOx64
     PORT MAP(
         Data        => data_in_fifo,
-        WrClock     => clk_sample, --clk_sys,
+        WrClock     => clk_sys,
         RdClock     => clk_sys,
         WrEn        => valid_fifo_in,
         RdEn        => fifo_data_request,
@@ -167,6 +174,8 @@ BEGIN
     valid_fifo_in     <= valid_in;
     fifo_data_request <= request_word;
     FIFO_data_out     <= data_out_fifo;
+    test_1            <= request_word;
+    test_4            <= data_out_fifo;
 
     ---------------------------------------------------------------------------
     ---------------------------------------------------------------------------
@@ -180,6 +189,8 @@ BEGIN
         i_sys_rst      => reset_top,        -- system reset
         i_csn          => chip_select,      -- chip select for SPI master
         i_data         => PHY_data_in,      -- input data
+        i_wr_tr_en     => write_enable,     -- write transaction enable
+        i_rd_tr_en     => read_enable,      -- read transaction enable
         i_wr           => write_valid_data, -- Active High (my observation)
         i_rd           => read_valid_data,  -- Active High (my observation)
         o_tx_ready     => tx_ready_M,       -- Transmitter ready, can write another 
@@ -187,11 +198,10 @@ BEGIN
         o_data         => M_data_out,       -- receive data
         o_tx_error     => tx_error_M,       -- Transmitter error
         o_intr         => interrupt,        -- interrupt
-        i_slave_addr   => "00",             -- Slave Address
         i_cpol         => CPOL,             -- CPOL value - 0 or 1
         i_cpha         => CPHA,             -- CPHA value - 0 or 1 
         i_lsb_first    => '0',              -- lsb first when '1' /msb first when '0'
-        i_spi_start    => start_trans,      -- START PHY Master Transactions
+        i_PHY_start    => start_trans,      -- START PHY Master Transactions
         i_clk_period   => CLK_PERIOD,       -- SCL clock period in terms of i_sys_clk
         i_setup_cycles => SETUP_CYCLES,     -- PHY_M tx setup time  in terms of i_sys_clk
         i_hold_cycles  => HOLD_CYCLES,      -- PHY_M tx hold time  in terms of i_sys_clk
@@ -199,6 +209,9 @@ BEGIN
         PHY_M_IO       => LVDS_IO_debug,    -- LVDS serial IO
         o_sclk         => sclk_debug        -- Master clock
     );
+
+    data_out  <= data_received;
+    valid_out <= data_valid_received;
 
     -----------------------------------------------------------------------
     --------------------- SPI Master User FSM -----------------------------
@@ -208,7 +221,7 @@ BEGIN
         IF reset_top = '1' THEN
             state_transaction   <= IDLE;
             request_word        <= '0'; -- read enable to FIFO
-            data_valid_recieved <= '0';
+            data_valid_received <= '0';
             write_valid_data    <= '0'; -- data valid flag to SMI_M
             chip_select         <= '1'; -- master chip select flag to PHY_M
             start_trans         <= '0'; -- start SPI transaction flag
@@ -219,12 +232,12 @@ BEGIN
                     start_wait_counter  <= '0';
                     request_word        <= '0'; -- read enable to FIFO
                     write_valid_data    <= '0'; -- data valid flag to PHY_M
-                    data_valid_recieved <= '0'; -- valid received data
+                    data_valid_received <= '0'; -- valid received data
                     chip_select         <= '1'; -- master chip select flag to PHY_M
                     start_trans         <= '0'; -- start SPI transaction flag
-                    IF WR_ENABLE = '1' THEN
+                    IF write_enable = '1' THEN
                         state_transaction <= TX_WAIT;
-                    ELSIF RD_ENABLE = '1' THEN
+                    ELSIF read_enable = '1' THEN
                         state_transaction <= RX_transaction;
                     ELSE
                         state_transaction <= IDLE;
@@ -242,9 +255,9 @@ BEGIN
                     SPI_M_CS           <= '0';        -- start the SPI word transaction, lower the SPI chip select line
 
                 WHEN SETUP_WORD =>
-                    request_word <= '0';                                   -- disable the read enable to FIFO
-                    word_reg     <= FIFO_data_out(WORD_SIZE - 1 DOWNTO 0); -- latch/register the word from FIFO
-                    IF setup_word_wait = '1' THEN                          -- if the wait is equal to the required setup word cycles then change state to latch first element of the word
+                    request_word <= '0';                                     -- disable the read enable to FIFO
+                    word_reg     <= FIFO_data_out(Data_Length - 1 DOWNTO 0); -- latch/register the word from FIFO
+                    IF setup_word_wait = '1' THEN                            -- if the wait is equal to the required setup word cycles then change state to latch first element of the word
                         state_transaction  <= LATCH_D1;
                         start_wait_counter <= '0'; -- stop/reset the wait counter
                     END IF;
@@ -271,7 +284,7 @@ BEGIN
                     END IF;
                     ------------------------ Receiver ------------------------------------
                 WHEN RX_transaction =>
-                    start_trans = '1'-- start master transaction
+                    start_trans       <= '1';-- start master transaction
                     state_transaction <= WAIT_RX_D1;
 
                 WHEN WAIT_RX_D1 =>
@@ -279,14 +292,14 @@ BEGIN
                     IF rx_ready_M = '1' THEN
                         state_transaction <= RX_latch_state;
                         chip_select       <= '0';
-                        read_valid_data   <= '1';
+                        read_valid_data   <= '1'; -- to read valid data from PHY_Master
                     END IF;
 
-                WHEN RX_latch_state
+                WHEN RX_latch_state =>
                     chip_select         <= '1';
                     read_valid_data     <= '0';
                     data_received       <= M_data_out; -- latch out valid data
-                    data_valid_recieved <= '1';
+                    data_valid_received <= '1';        -- valid data signal for user
                     state_transaction   <= IDLE;
             END CASE;
         END IF;
@@ -312,7 +325,7 @@ BEGIN
         '0';
     intr_word_wait <= '1' WHEN wait_count = INTER_WORD_CYCLES ELSE
         '0';
-    setup_word_wait <= '1' WHEN wait_count = SETUP_WORD_CYCLES ELSE
+    setup_word_wait <= '1' WHEN wait_count = "0000000010" ELSE
         '0';
 
 END behavioral;
