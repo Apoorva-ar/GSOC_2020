@@ -8,8 +8,8 @@ USE ieee.std_logic_unsigned.ALL;
 
 ENTITY PHY_data_path IS
     GENERIC (
-        DATA_SIZE : INTEGER  := 10;
-        FIFO_REQ  : BOOLEAN) := FALSE);
+        DATA_SIZE : INTEGER := 10;
+        FIFO_REQ  : BOOLEAN := FALSE);
     PORT (
         i_sys_clk   : IN std_logic;                                -- system clock
         i_sys_rst   : IN std_logic;                                -- system reset
@@ -28,8 +28,8 @@ ENTITY PHY_data_path IS
         i_lsb_first : IN std_logic;                                 -- lsb first when '1' /msb first when -- '0'
         o_intr      : OUT std_logic;
         io_LVDS     : INOUT std_logic;
-        i_ssn       : IN std_logic;  -- Slave Slect Active low
-        i_sclk      : IN std_logic -- Clock from PHY Master clock gen
+        i_ssn       : IN std_logic_vector(1 DOWNTO 0); -- Slave Slect Active low
+        i_sclk      : IN std_logic                     -- Clock from PHY Master clock gen
     );
 
 END PHY_data_path;
@@ -184,7 +184,7 @@ BEGIN
             IF (tx_data_count_neg_sclk_i = DATA_SIZE - 1) THEN
                 tx_data_count_neg_sclk_i <= (OTHERS => '0');
                 tx_done_neg_sclk_i       <= '1';
-            ELSIF (i_ssn = '0') THEN
+            ELSIF i_ssn = "01" THEN
                 tx_data_count_neg_sclk_i <= tx_data_count_neg_sclk_i + 1;
                 tx_done_neg_sclk_i       <= '0';
             END IF;
@@ -203,7 +203,7 @@ BEGIN
             IF (tx_data_count_pos_sclk_i = DATA_SIZE - 1) THEN
                 tx_data_count_pos_sclk_i <= (OTHERS => '0');
                 tx_done_pos_sclk_i       <= '1';
-            ELSIF (i_ssn = '0') THEN
+            ELSIF (i_ssn = "01") THEN
                 tx_data_count_pos_sclk_i <= tx_data_count_pos_sclk_i + 1;
                 tx_done_pos_sclk_i       <= '0';
             END IF;
@@ -212,7 +212,7 @@ BEGIN
 
     PROCESS (i_ssn, i_cpol, i_cpha, mosi_00_i, mosi_01_i, mosi_10_i, mosi_11_i)
     BEGIN
-        IF (i_ssn = '0') THEN
+        IF (i_ssn = "01") THEN
             IF (i_cpol = '0' AND i_cpha = '0') THEN
                 io_LVDS <= mosi_00_i;
             ELSIF (i_cpol = '0' AND i_cpha = '1') THEN
@@ -314,7 +314,7 @@ BEGIN
         IF (i_sys_rst = '1') THEN
             rx_shift_data_pos_sclk_i <= (OTHERS => '0');
         ELSIF rising_edge(i_sclk) THEN
-            IF (i_ssn = '0' AND ((i_cpol = '0' AND i_cpha = '0') OR (i_cpol = '1' AND i_cpha = '1'))) THEN
+            IF (i_ssn = "10" AND ((i_cpol = '0' AND i_cpha = '0') OR (i_cpol = '1' AND i_cpha = '1'))) THEN
                 IF (i_lsb_first = '1') THEN
                     rx_shift_data_pos_sclk_i <= io_LVDS & rx_shift_data_pos_sclk_i(DATA_SIZE - 1 DOWNTO 1);
                 ELSE
@@ -330,11 +330,11 @@ BEGIN
             rx_data_count_pos_sclk_i <= (OTHERS => '0');
             rx_done_pos_sclk_i       <= '0';
         ELSIF rising_edge(i_sclk) THEN
-            IF (i_ssn = '0' AND ((i_cpol = '0' AND i_cpha = '0') OR (i_cpol = '1' AND i_cpha = '1'))) THEN
+            IF (i_ssn = "10" AND ((i_cpol = '0' AND i_cpha = '0') OR (i_cpol = '1' AND i_cpha = '1'))) THEN
                 IF (rx_data_count_pos_sclk_i = DATA_SIZE - 1) THEN
                     rx_data_count_pos_sclk_i <= (OTHERS => '0');
                     rx_done_pos_sclk_i       <= '1';
-                ELSIF (i_ssn = '0') THEN
+                ELSIF (i_ssn = "10") THEN
                     rx_data_count_pos_sclk_i <= rx_data_count_pos_sclk_i + 1;
                     rx_done_pos_sclk_i       <= '0';
                 END IF;
@@ -352,7 +352,7 @@ BEGIN
         IF (i_sys_rst = '1') THEN
             rx_shift_data_neg_sclk_i <= (OTHERS => '0');
         ELSIF falling_edge(i_sclk) THEN
-            IF (i_ssn = '0' AND ((i_cpol = '1' AND i_cpha = '0') OR (i_cpol = '0' AND i_cpha = '1'))) THEN
+            IF (i_ssn = "10" AND ((i_cpol = '1' AND i_cpha = '0') OR (i_cpol = '0' AND i_cpha = '1'))) THEN
                 IF (i_lsb_first = '1') THEN
                     rx_shift_data_neg_sclk_i <= io_LVDS & rx_shift_data_neg_sclk_i(DATA_SIZE - 1 DOWNTO 1);
                 ELSE
@@ -371,7 +371,7 @@ BEGIN
             IF (rx_data_count_neg_sclk_i = DATA_SIZE - 1) THEN
                 rx_data_count_neg_sclk_i <= (OTHERS => '0');
                 rx_done_neg_sclk_i       <= '1';
-            ELSIF (i_ssn = '0') THEN
+            ELSIF (i_ssn = "10") THEN
                 rx_data_count_neg_sclk_i <= rx_data_count_neg_sclk_i + 1;
                 rx_done_neg_sclk_i       <= '0';
             END IF;
@@ -389,7 +389,7 @@ BEGIN
             rx_done_reg2_i <= '0';
             rx_done_reg3_i <= '0';
         ELSIF rising_edge(i_sys_clk) THEN
-            IF (i_ssn = '0' AND ((i_cpol = '0' AND i_cpha = '0') OR (i_cpol = '1' AND i_cpha = '1'))) THEN
+            IF (i_ssn = "10" AND ((i_cpol = '0' AND i_cpha = '0') OR (i_cpol = '1' AND i_cpha = '1'))) THEN
                 rx_done_reg1_i <= rx_done_pos_sclk_i;
             ELSE
                 rx_done_reg1_i <= rx_done_neg_sclk_i;
