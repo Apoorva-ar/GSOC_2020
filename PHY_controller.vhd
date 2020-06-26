@@ -1,161 +1,158 @@
 -- (MASTER LVDS_SERDES with FIFO buffer)
 
-library ieee;
-use ieee.std_logic_1164.all;
-use ieee.std_logic_arith.all;
-use ieee.std_logic_signed.all;
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+USE ieee.std_logic_arith.ALL;
+USE ieee.std_logic_signed.ALL;
 
-entity PHY_controller is
-    generic (
-        WORD_SIZE         : integer                      := 48;
-        Data_Length       : integer                      := 16;
-        SETUP_WORD_CYCLES : STD_LOGIC_VECTOR(9 downto 0) := "0010010000"; -- 144 cycles (48MHz) for 3us
-        INTER_WORD_CYCLES : STD_LOGIC_VECTOR(9 downto 0) := "1001110000"; -- 624 cycles for 13us
-        INTER_DATA_CYCLES : STD_LOGIC_VECTOR(9 downto 0) := "0001100000"; -- 96 cycles (48 MHz) for 2us
+ENTITY PHY_controller IS
+    GENERIC (
+        WORD_SIZE         : INTEGER                      := 48;
+        Data_Length       : INTEGER                      := 16;
+        SETUP_WORD_CYCLES : STD_LOGIC_VECTOR(9 DOWNTO 0) := "0010010000"; -- 144 cycles (48MHz) for 3us
+        INTER_WORD_CYCLES : STD_LOGIC_VECTOR(9 DOWNTO 0) := "1001110000"; -- 624 cycles for 13us
+        INTER_DATA_CYCLES : STD_LOGIC_VECTOR(9 DOWNTO 0) := "0001100000"; -- 96 cycles (48 MHz) for 2us
         CPOL              : std_logic                    := '0';
         CPHA              : std_logic                    := '1';
-        CLK_PERIOD        : std_logic_vector(7 downto 0) := "00011110"; -- 30 cycles for 1.6MHz sclk from 48 Mhz system clock
-        SETUP_CYCLES      : std_logic_vector(7 downto 0) := "00000110"; -- 6 cycles
-        HOLD_CYCLES       : std_logic_vector(7 downto 0) := "00000110"; -- 6 cycles
-        TX2TX_CYCLES      : std_logic_vector(7 downto 0) := "00000010"
+        CLK_PERIOD        : std_logic_vector(7 DOWNTO 0) := "00011110"; -- 30 cycles for 1.6MHz sclk from 48 Mhz system clock
+        SETUP_CYCLES      : std_logic_vector(7 DOWNTO 0) := "00000110"; -- 6 cycles
+        HOLD_CYCLES       : std_logic_vector(7 DOWNTO 0) := "00000110"; -- 6 cycles
+        TX2TX_CYCLES      : std_logic_vector(7 DOWNTO 0) := "00000010"
     );
-    port (
+    PORT (
         -------------- System Interfaces ---------
-        clk_sys, clk_sample, reset_top : in STD_LOGIC;
+        clk_sys, clk_sample, reset_top : IN STD_LOGIC;
         ------------- PHY Interfaces -------------
-        LVDS_IO_debug : inout std_logic;
-        sclk_debug    : out std_logic;
+        LVDS_IO_debug : INOUT std_logic;
+        sclk_debug    : OUT std_logic;
         ------------- DATA IO channel ------------
-        data_in      : in std_logic_vector(Data_Length - 1 downto 0);
-        valid_in     : in std_logic;
-        write_enable : in std_logic;
-        write_ready  : out std_logic;
-        data_out     : out std_logic_vector(Data_Length - 1 downto 0);
-        valid_out    : out std_logic;
-        read_enable  : in std_logic;
+        data_in      : IN std_logic_vector(Data_Length - 1 DOWNTO 0);
+        valid_in     : IN std_logic;
+        write_enable : IN std_logic;
+        write_ready  : OUT std_logic;
+        data_out     : OUT std_logic_vector(Data_Length - 1 DOWNTO 0);
+        valid_out    : OUT std_logic;
+        read_enable  : IN std_logic;
+        --read_ready   : OUT std_logic;
         ------------- Test Intefaces --------------
-        test_1 : out std_logic;
-        test_2 : out std_logic_vector(3 downto 0);
-        test_3 : out std_logic;
-        test_4 : out std_logic_vector(15 downto 0)
+        test_1 : OUT std_logic;
+        test_2 : OUT std_logic_vector(3 DOWNTO 0);
+        test_3 : OUT std_logic;
+        test_4 : OUT std_logic_vector(15 DOWNTO 0)
     );
-end PHY_controller;
+END PHY_controller;
 
-architecture behavioral of PHY_controller is
+ARCHITECTURE behavioral OF PHY_controller IS
     ----------------------------------------------------------------------------------------
     ----------------------------- Component Declaration  -----------------------------------
     ----------------------------------------------------------------------------------------
 
-    component PHY_master is
-        generic (
-            DATA_SIZE : integer := 32;
-            FIFO_REQ  : boolean := True);
-        port (
-            i_sys_clk : in std_logic; -- system clock
-            i_sys_rst : in std_logic; -- system reset
+    COMPONENT PHY_master IS
+        GENERIC (
+            DATA_SIZE : INTEGER := 32;
+            FIFO_REQ  : BOOLEAN := True);
+        PORT (
+            i_sys_clk : IN std_logic; -- system clock
+            i_sys_rst : IN std_logic; -- system reset
 
-            i_data     : in std_logic_vector(Data_Length - 1 downto 0);  -- Input data
-            o_data     : out std_logic_vector(Data_Length - 1 downto 0); --output data
-            i_wr_tr_en : in std_logic;                                   -- write transaction enable
-            i_rd_tr_en : in std_logic;                                   -- read transaction enable
-            i_csn      : in std_logic;                                   -- chip select for PHY master transaction Data IO
-            i_wr       : in std_logic;                                   -- Active Low Write, Active High Read
-            i_rd       : in std_logic;                                   -- Active Low Write, Active High Read
+            i_data     : IN std_logic_vector(Data_Length - 1 DOWNTO 0);  -- Input data
+            o_data     : OUT std_logic_vector(Data_Length - 1 DOWNTO 0); --output data
+            i_wr_tr_en : IN std_logic;                                   -- write transaction enable
+            i_rd_tr_en : IN std_logic;                                   -- read transaction enable
+            i_csn      : IN std_logic;                                   -- chip select for PHY master transaction Data IO
+            i_wr       : IN std_logic;                                   -- Active Low Write, Active High Read
+            i_rd       : IN std_logic;                                   -- Active Low Write, Active High Read
 
-            o_tx_ready : out std_logic; -- Transmitter ready, can write another data
-            o_rx_ready : out std_logic; -- Receiver ready, can read data
+            o_tx_ready : OUT std_logic; -- Transmitter ready, can write another data
+            o_rx_ready : OUT std_logic; -- Receiver ready, can read data
 
-            o_tx_error : out std_logic; -- Transmitter error
-            o_rx_error : out std_logic; -- Receiver error
-            o_intr     : out std_logic;
+            o_tx_error : OUT std_logic; -- Transmitter error
+            o_rx_error : OUT std_logic; -- Receiver error
+            o_intr     : OUT std_logic;
 
-            i_cpol         : in std_logic;                    -- CPOL value - 0 or 1
-            i_cpha         : in std_logic;                    -- CPHA value - 0 or 1 
-            i_lsb_first    : in std_logic;                    -- lsb first when '1' /msb first when 
-            i_PHY_start    : in std_logic;                    -- START PHY Master Transactions
-            i_clk_period   : in std_logic_vector(7 downto 0); -- SCL clock period in terms of i_sys_clk
-            i_setup_cycles : in std_logic_vector(7 downto 0); --  setup time  in terms of i_sys_clk
-            i_hold_cycles  : in std_logic_vector(7 downto 0); --  hold time  in terms of i_sys_clk
-            i_tx2tx_cycles : in std_logic_vector(7 downto 0); --  interval between data transactions in terms of i_sys_clk
+            i_cpol         : IN std_logic;                    -- CPOL value - 0 or 1
+            i_cpha         : IN std_logic;                    -- CPHA value - 0 or 1 
+            i_lsb_first    : IN std_logic;                    -- lsb first when '1' /msb first when 
+            i_PHY_start    : IN std_logic;                    -- START PHY Master Transactions
+            i_clk_period   : IN std_logic_vector(7 DOWNTO 0); -- SCL clock period in terms of i_sys_clk
+            i_setup_cycles : IN std_logic_vector(7 DOWNTO 0); --  setup time  in terms of i_sys_clk
+            i_hold_cycles  : IN std_logic_vector(7 DOWNTO 0); --  hold time  in terms of i_sys_clk
+            i_tx2tx_cycles : IN std_logic_vector(7 DOWNTO 0); --  interval between data transactions in terms of i_sys_clk
 
-            PHY_M_IO    : inout std_logic; -- LVDS bidirectional data link
-            o_sclk      : out std_logic;   -- Master clock
-            mosi_tri_en : out std_logic
+            PHY_M_IO    : INOUT std_logic; -- LVDS bidirectional data link
+            o_sclk      : OUT std_logic;   -- Master clock
+            mosi_tri_en : OUT std_logic
         );
-    end component;
+    END COMPONENT;
 
-    component FIFOx64
-        port (
-            Data        : in std_logic_vector(Data_Length - 1 downto 0);
-            WrClock     : in std_logic;
-            RdClock     : in std_logic;
-            WrEn        : in std_logic;
-            RdEn        : in std_logic;
-            Reset       : in std_logic;
-            RPReset     : in std_logic;
-            Q           : out std_logic_vector(Data_Length - 1 downto 0);
-            Empty       : out std_logic;
-            Full        : out std_logic;
-            AlmostEmpty : out std_logic;
-            AlmostFull  : out std_logic
+    COMPONENT FIFOx64
+        PORT (
+            Data        : IN std_logic_vector(Data_Length - 1 DOWNTO 0);
+            WrClock     : IN std_logic;
+            RdClock     : IN std_logic;
+            WrEn        : IN std_logic;
+            RdEn        : IN std_logic;
+            Reset       : IN std_logic;
+            RPReset     : IN std_logic;
+            Q           : OUT std_logic_vector(Data_Length - 1 DOWNTO 0);
+            Empty       : OUT std_logic;
+            Full        : OUT std_logic;
+            AlmostEmpty : OUT std_logic;
+            AlmostFull  : OUT std_logic
         );
-    end component;
+    END COMPONENT;
 
     ----------------------------------------------------------------------------------------
     ----------------------------- System Signals -------------------------------------------
     ----------------------------------------------------------------------------------------
-    signal data_valid_received : std_logic                                  := '0';
-    signal fifo_data_request   : std_logic                                  := '0';
-    signal tx_ready_M          : STD_LOGIC                                  := '0';
-    signal rx_ready_M          : STD_LOGIC                                  := '0';
-    signal tx_error_M          : STD_LOGIC                                  := '0';
-    signal interrupt           : STD_LOGIC                                  := '0';
-    signal wait_count          : std_logic_vector(9 downto 0)               := (others => '0');
-    signal intr_data_wait      : std_logic                                  := '0';
-    signal intr_word_wait      : std_logic                                  := '0';
-    signal setup_word_wait     : std_logic                                  := '0';
-    signal request_word        : std_logic                                  := '0';
-    signal valid_data          : std_logic                                  := '0';
-    signal master_cs           : std_logic                                  := '0';
-    signal data_valid          : std_logic                                  := '0';
-    signal chip_select         : std_logic                                  := '0';
-    signal start_trans         : std_logic                                  := '0';
-    signal start_wait_counter  : std_logic                                  := '0';
-    signal slave_CS            : std_logic_vector(3 downto 0)               := (others => '0');
-    signal word_reg            : std_logic_vector(Data_Length - 1 downto 0) := (others => '0');
-    signal DATA_Valid_SPI_M_I  : std_logic                                  := '0';
-    type state_S is(IDLE, TX_WAIT, LATCH_WORD, LATCH_D1, TRANSMIT_D1, wait_transmission_D1, END_TRANSACTION, SETUP_WORD, RX_transaction, WAIT_RX_D1, RX_latch_state);
-    signal state_transaction : state_S := IDLE;
-    type state_S_2 is(IDLE, counter_state, WAIT_empty_state);
-    signal state_FIFO        : state_S_2                                  := counter_state;
-    signal CSN_SPI_M         : std_logic                                  := '0';
-    signal Start_SPI_M       : std_logic                                  := '0';
-    signal Data_SPI_M_I      : std_logic_vector(Data_Length - 1 downto 0) := (others => '0');
-    signal SPI_data_in       : std_logic_vector(Data_Length - 1 downto 0) := (others => '0');
-    signal data_out_fifo     : std_logic_vector(Data_Length - 1 downto 0) := (others => '0');
-    signal FIFO_data_out     : std_logic_vector(Data_Length - 1 downto 0) := (others => '0');
-    signal SPI_M_CS          : std_logic                                  := '1'; -- SPI slave chip select
-    signal data_in_fifo      : std_logic_vector(Data_Length - 1 downto 0) := (others => '0');
-    signal FIFO_empty_signal : std_logic                                  := '0';
-    signal FIFO_almost_empty : std_logic                                  := '0';
-    signal FIFO_almost_full  : std_logic                                  := '0';
-    signal full_fifo         : std_logic                                  := '0';
-    signal valid_fifo_in     : std_logic                                  := '0';
-    signal temp              : std_logic_vector(Data_Length - 1 downto 0);
-    signal valid_temp        : std_logic := '0';
-    signal PHY_data_in       : std_logic_vector(Data_Length - 1 downto 0);
-    signal write_valid_data  : std_logic := '0';
-    signal read_valid_data   : std_logic := '0';
-    signal M_data_out        : std_logic_vector(Data_Length - 1 downto 0);
-    signal data_received     : std_logic_vector(Data_Length - 1 downto 0);
-begin
+    SIGNAL data_valid_received : std_logic                                  := '0';
+    SIGNAL fifo_data_request   : std_logic                                  := '0';
+    SIGNAL tx_ready_M          : STD_LOGIC                                  := '0';
+    SIGNAL rx_ready_M          : STD_LOGIC                                  := '0';
+    SIGNAL tx_error_M          : STD_LOGIC                                  := '0';
+    SIGNAL interrupt           : STD_LOGIC                                  := '0';
+    SIGNAL wait_count          : std_logic_vector(9 DOWNTO 0)               := (OTHERS => '0');
+    SIGNAL intr_data_wait      : std_logic                                  := '0';
+    SIGNAL intr_word_wait      : std_logic                                  := '0';
+    SIGNAL setup_word_wait     : std_logic                                  := '0';
+    SIGNAL request_word        : std_logic                                  := '0';
+    SIGNAL valid_data          : std_logic                                  := '0';
+    SIGNAL master_cs           : std_logic                                  := '0';
+    SIGNAL data_valid          : std_logic                                  := '0';
+    SIGNAL chip_select         : std_logic                                  := '0';
+    SIGNAL start_trans         : std_logic                                  := '0';
+    SIGNAL start_wait_counter  : std_logic                                  := '0';
+    SIGNAL slave_CS            : std_logic_vector(3 DOWNTO 0)               := (OTHERS => '0');
+    SIGNAL word_reg            : std_logic_vector(Data_Length - 1 DOWNTO 0) := (OTHERS => '0');
+    TYPE state_S IS(IDLE, TX_WAIT, LATCH_WORD, LATCH_D1, TRANSMIT_D1, wait_transmission_D1, END_TRANSACTION, SETUP_WORD, RX_transaction, WAIT_RX_D1, RX_latch_state);
+    SIGNAL state_transaction : state_S := IDLE;
+    TYPE state_S_2 IS(IDLE, counter_state, WAIT_empty_state);
+    SIGNAL state_FIFO        : state_S_2                                  := counter_state;
+    SIGNAL CSN_SPI_M         : std_logic                                  := '0';
+    SIGNAL data_out_fifo     : std_logic_vector(Data_Length - 1 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL FIFO_data_out     : std_logic_vector(Data_Length - 1 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL SPI_M_CS          : std_logic                                  := '1'; -- SPI slave chip select
+    SIGNAL data_in_fifo      : std_logic_vector(Data_Length - 1 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL FIFO_empty_signal : std_logic                                  := '0';
+    SIGNAL FIFO_almost_empty : std_logic                                  := '0';
+    SIGNAL FIFO_almost_full  : std_logic                                  := '0';
+    SIGNAL full_fifo         : std_logic                                  := '0';
+    SIGNAL valid_fifo_in     : std_logic                                  := '0';
+    SIGNAL temp              : std_logic_vector(Data_Length - 1 DOWNTO 0);
+    SIGNAL valid_temp        : std_logic := '0';
+    SIGNAL PHY_data_in       : std_logic_vector(Data_Length - 1 DOWNTO 0);
+    SIGNAL write_valid_data  : std_logic := '0';
+    SIGNAL read_valid_data   : std_logic := '0';
+    SIGNAL M_data_out        : std_logic_vector(Data_Length - 1 DOWNTO 0);
+    SIGNAL data_received     : std_logic_vector(Data_Length - 1 DOWNTO 0);
+BEGIN
 
     ----------------------------------------------------------------------------------------
     ----------------------------- Component Instantiation  ---------------------------------
     ----------------------------------------------------------------------------------------
 
     USER_FIFO_block : FIFOx64
-    port map(
+    PORT MAP(
         Data        => data_in_fifo,
         WrClock     => clk_sys,
         RdClock     => clk_sys,
@@ -170,10 +167,10 @@ begin
         Full        => full_fifo
     );
 
-    data_in_fifo      <= data_in;
-    valid_fifo_in     <= valid_in;
-    fifo_data_request <= request_word;
-    FIFO_data_out     <= data_out_fifo;
+    -- data_in_fifo      <= data_in;
+    -- valid_fifo_in     <= valid_in;
+    -- fifo_data_request <= request_word;
+    -- FIFO_data_out     <= data_out_fifo;
     test_1            <= request_word;
     test_4            <= data_out_fifo;
 
@@ -181,10 +178,10 @@ begin
     ---------------------------------------------------------------------------
     ---------------------------------------------------------------------------
     PHY_Master_COMPONENT : PHY_master
-    generic map(
+    GENERIC MAP(
         DATA_SIZE => Data_Length,
         FIFO_REQ  => False)
-    port map(
+    PORT MAP(
         i_sys_clk      => clk_sys,          -- system high speed clock 
         i_sys_rst      => reset_top,        -- system reset
         i_csn          => chip_select,      -- chip select for PHY master
@@ -214,118 +211,123 @@ begin
     valid_out <= data_valid_received;
 
     -----------------------------------------------------------------------
-    --------------------- SPI Master User FSM -----------------------------
+    ---------------------   Master User FSM -----------------------------
     -----------------------------------------------------------------------
-    PHY_MASTER_USER_FSM : process (clk_sys, reset_top)
-    begin
-        if reset_top = '1' then
+    PHY_MASTER_USER_FSM : PROCESS (clk_sys, reset_top)
+    BEGIN
+        IF reset_top = '1' THEN
             state_transaction   <= IDLE;
             request_word        <= '0'; -- read enable to FIFO
             data_valid_received <= '0';
             write_valid_data    <= '0'; -- data valid flag to SMI_M
             chip_select         <= '1'; -- master chip select flag to PHY_M
-            start_trans         <= '0'; -- start SPI transaction flag
+            start_trans         <= '0'; -- start  transaction flag
             start_wait_counter  <= '0';
-        elsif rising_edge(clk_sys) then
-            case state_transaction is
-                when IDLE =>
+        ELSIF rising_edge(clk_sys) THEN
+            CASE state_transaction IS
+                WHEN IDLE =>
+                    write_ready <= '1'; -- ready to accept new data from user
+                    -- read_ready          <= '1'; -- read to write new data to user
                     start_wait_counter  <= '0';
                     request_word        <= '0'; -- read enable to FIFO
                     write_valid_data    <= '0'; -- data valid flag to PHY_M
                     data_valid_received <= '0'; -- valid received data
                     chip_select         <= '1'; -- master chip select flag to PHY_M
-                    start_trans         <= '0'; -- start SPI transaction flag
-                    if write_enable = '1' then
+                    start_trans         <= '0'; -- start  transaction flag
+                    IF write_enable = '1' THEN
                         state_transaction <= TX_WAIT;
-                    elsif read_enable = '1' then
+                    ELSIF read_enable = '1' THEN
                         state_transaction <= RX_transaction;
-                    else
+                    ELSE
                         state_transaction <= IDLE;
-                    end if;
+                    END IF;
                     ------------------------ Transmitter ------------------------------------
-                when TX_WAIT =>
-                    if FIFO_empty_signal = '0' then -- if valid data is available in FIFO
+                WHEN TX_WAIT =>
+                    write_ready <= '0';
+                    -- IF FIFO_empty_signal = '0' THEN -- if valid data is available in FIFO
+                    IF valid_in = '1' THEN
                         state_transaction <= LATCH_WORD;
-                    end if;
+                        word_reg          <= data_in;
+                    END IF;
 
-                when LATCH_WORD =>
+                WHEN LATCH_WORD =>
                     request_word       <= '1';        -- demand new word from FIFO
                     start_wait_counter <= '1';        -- start counter for delay before sending first data element
                     state_transaction  <= SETUP_WORD; -- start_transaction;
-                    SPI_M_CS           <= '0';        -- start the SPI word transaction, lower the SPI chip select line
 
-                when SETUP_WORD =>
-                    request_word <= '0';                                     -- disable the read enable to FIFO
-                    word_reg     <= FIFO_data_out(Data_Length - 1 downto 0); -- latch/register the word from FIFO
-                    if setup_word_wait = '1' then                            -- if the wait is equal to the required setup word cycles then change state to latch first element of the word
+                WHEN SETUP_WORD =>
+                    request_word <= '0'; -- disable the read enable to FIFO
+                    -- word_reg     <= FIFO_data_out(Data_Length - 1 DOWNTO 0); -- latch/register the word from FIFO
+                    IF setup_word_wait = '1' THEN -- if the wait is equal to the required setup word cycles then change state to latch first element of the word
                         state_transaction  <= LATCH_D1;
                         start_wait_counter <= '0'; -- stop/reset the wait counter
-                    end if;
+                    END IF;
 
-                when LATCH_D1 =>
-                    write_valid_data  <= '1';      -- raise the data_valid flag to SPI_M
+                WHEN LATCH_D1 =>
+                    write_valid_data  <= '1';      -- raise the data_valid flag to 
                     chip_select       <= '0';      -- lower the master chip select to latch_in a new element
-                    PHY_data_in       <= word_reg; -- latch_in new element into input_data register of SPI_M
+                    PHY_data_in       <= word_reg; -- latch_in new element into input_data register of 
                     state_transaction <= TRANSMIT_D1;
 
-                when TRANSMIT_D1 =>
+                WHEN TRANSMIT_D1 =>
                     write_valid_data  <= '0';
                     chip_select       <= '1';
-                    start_trans       <= '1'; -- start SPI master transaction
+                    start_trans       <= '1'; -- start  master transaction
                     state_transaction <= wait_transmission_D1;
 
-                when wait_transmission_D1 =>
-                    start_trans       <= '0'; -- reset SPI master transaction
+                WHEN wait_transmission_D1 =>
+                    start_trans       <= '0'; -- reset  master transaction
                     state_transaction <= END_TRANSACTION;
 
-                when END_TRANSACTION =>
-                    if tx_ready_M = '1' then
+                WHEN END_TRANSACTION =>
+                    IF tx_ready_M = '1' THEN
                         state_transaction <= IDLE;
-                    end if;
+                    END IF;
                     ------------------------ Receiver ------------------------------------
-                when RX_transaction =>
+                WHEN RX_transaction =>
+                    -- read_ready        <= '0';
                     start_trans       <= '1';-- start master transaction
                     state_transaction <= WAIT_RX_D1;
 
-                when WAIT_RX_D1 =>
+                WHEN WAIT_RX_D1 =>
                     start_trans <= '0'; -- reset master transaction
-                    if rx_ready_M = '1' then
+                    IF rx_ready_M = '1' THEN
                         state_transaction <= RX_latch_state;
                         chip_select       <= '0';
                         read_valid_data   <= '1'; -- to read valid data from PHY_Master
-                    end if;
+                    END IF;
 
-                when RX_latch_state =>
+                WHEN RX_latch_state =>
                     chip_select         <= '1';
                     read_valid_data     <= '0';
                     data_received       <= M_data_out; -- latch out valid data
                     data_valid_received <= '1';        -- valid data signal for user
                     state_transaction   <= IDLE;
-            end case;
-        end if;
-    end process;
+            END CASE;
+        END IF;
+    END PROCESS;
     ------------------------------------------------------------------------------------------------
     ------ Wait Counter used for controlling wait stages between LVDS transactions -----------------
     ------------------ wait counter enabled only when delay_count_start_i = '1' --------------------
     ------------------------------------------------------------------------------------------------
-    process (clk_sys, reset_top)
-    begin
-        if reset_top = '1' then
+    PROCESS (clk_sys, reset_top)
+    BEGIN
+        IF reset_top = '1' THEN
             wait_count <= "0000000001";
-        elsif rising_edge(clk_sys) then
-            if start_wait_counter = '0' then
+        ELSIF rising_edge(clk_sys) THEN
+            IF start_wait_counter = '0' THEN
                 wait_count <= "0000000001";
-            else
+            ELSE
                 wait_count <= wait_count + 1;
-            end if;
-        end if;
-    end process;
+            END IF;
+        END IF;
+    END PROCESS;
 
-    intr_data_wait <= '1' when wait_count = INTER_DATA_CYCLES else
+    intr_data_wait <= '1' WHEN wait_count = INTER_DATA_CYCLES ELSE
         '0';
-    intr_word_wait <= '1' when wait_count = INTER_WORD_CYCLES else
+    intr_word_wait <= '1' WHEN wait_count = INTER_WORD_CYCLES ELSE
         '0';
-    setup_word_wait <= '1' when wait_count = "0000000010" else
+    setup_word_wait <= '1' WHEN wait_count = "0000000010" ELSE
         '0';
 
-end behavioral;
+END behavioral;
