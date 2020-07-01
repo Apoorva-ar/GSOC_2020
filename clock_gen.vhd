@@ -18,7 +18,7 @@ ENTITY sclk_gen IS
         i_hold_cycles  : IN std_logic_vector(7 DOWNTO 0);
         i_tx2tx_cycles : IN std_logic_vector(7 DOWNTO 0);
         i_cpol         : IN std_logic;
-        o_ss_start     : OUT std_logic_vector(1 downto 0);
+        o_ss_start     : OUT std_logic_vector(1 DOWNTO 0);
         write_tr_en    : IN std_logic;
         read_tr_en     : IN std_logic;
         o_sclk         : OUT std_logic
@@ -27,22 +27,24 @@ END sclk_gen;
 
 ARCHITECTURE count_arch OF sclk_gen IS
 
-    SIGNAL clk_periodby2_i       : std_logic_vector(7 DOWNTO 0);
-    SIGNAL sclk_period_i         : std_logic_vector(7 DOWNTO 0);
-    SIGNAL sclk_count_i          : std_logic_vector(7 DOWNTO 0);
-    SIGNAL delay_clk_i           : std_logic;
-    SIGNAL div_clk_i             : std_logic;
-    SIGNAL clk_falling_i         : std_logic;
-    SIGNAL clk_rising_i          : std_logic;
-    SIGNAL delay_count_start_i   : std_logic;
-    SIGNAL tx2tx_delay_done_i    : std_logic;
-    SIGNAL hold_delay_done_i     : std_logic;
-    SIGNAL setup_delay_done_i    : std_logic;
-    SIGNAL delay_count_i         : std_logic_vector(7 DOWNTO 0);
-    SIGNAL falling_count_start_i : std_logic;
-    SIGNAL clk_falling_count_i   : std_logic_vector(7 DOWNTO 0);
-    SIGNAL spi_start_i           : std_logic;
-    SIGNAL sclk_count_start_i    : std_logic;
+    SIGNAL clk_periodby2_i        : std_logic_vector(7 DOWNTO 0);
+    SIGNAL sclk_period_i          : std_logic_vector(7 DOWNTO 0);
+    SIGNAL sclk_count_i           : std_logic_vector(7 DOWNTO 0);
+    SIGNAL delay_clk_i            : std_logic;
+    SIGNAL div_clk_i              : std_logic;
+    SIGNAL clk_falling_i          : std_logic;
+    SIGNAL clk_rising_i           : std_logic;
+    SIGNAL delay_count_start_i    : std_logic;
+    SIGNAL tx2tx_delay_done_i     : std_logic;
+    SIGNAL hold_delay_done_i      : std_logic;
+    SIGNAL setup_delay_done_i     : std_logic;
+    SIGNAL delay_count_i          : std_logic_vector(7 DOWNTO 0);
+    SIGNAL falling_count_start_i  : std_logic;
+    SIGNAL clk_falling_count_i    : std_logic_vector(7 DOWNTO 0);
+    SIGNAL spi_start_i            : std_logic;
+    SIGNAL sclk_count_start_i     : std_logic;
+    SIGNAL write_tr_enable_signal : std_logic;
+    SIGNAL read_tr_enable_signal  : std_logic;
 
     TYPE spim_clk_states IS (SPIM_IDLE_STATE, SPIM_SETUP_STATE,
         SPIM_DATA_TX_STATE, SPIM_HOLD_STATE, SPIM_TX2TX_WAIT_STATE);
@@ -95,9 +97,13 @@ BEGIN
     PROCESS (i_sys_clk, i_sys_rst)
     BEGIN
         IF i_sys_rst = '1' THEN
-            spi_start_i <= '0';
+            spi_start_i            <= '0';
+            write_tr_enable_signal <= '0';
+            read_tr_enable_signal  <= '0';
         ELSIF i_sys_clk'event AND i_sys_clk = '1' THEN
-            spi_start_i <= i_PHY_start;
+            spi_start_i            <= i_PHY_start;
+            write_tr_enable_signal <= write_tr_en;
+            read_tr_enable_signal  <= read_tr_en;
         END IF;
     END PROCESS;
     ----------------------------------------------------------------------------------------------------
@@ -138,12 +144,12 @@ BEGIN
         ELSIF (rising_edge(i_sys_clk)) THEN
             CASE (spim_clk_state_i) IS
                 WHEN SPIM_IDLE_STATE =>
-                    IF (spi_start_i = '1') AND write_tr_en = '1' THEN -- registered input
+                    IF (spi_start_i = '1') AND (write_tr_enable_signal = '1') THEN -- registered input
                         spim_clk_state_i    <= SPIM_SETUP_STATE;
                         delay_count_start_i <= '1';
                         o_ss_start          <= "01";
                         sclk_count_start_i  <= '0';
-                    ELSIF (spi_start_i = '1') AND read_tr_en = '1' THEN -- registered input
+                    ELSIF (spi_start_i = '1') AND (read_tr_enable_signal = '1') THEN -- registered input
                         spim_clk_state_i    <= SPIM_SETUP_STATE;
                         delay_count_start_i <= '1';
                         o_ss_start          <= "10";

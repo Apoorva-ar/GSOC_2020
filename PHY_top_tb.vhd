@@ -17,6 +17,7 @@ ARCHITECTURE behavior OF PHY_top_tb IS
             valid_in        : IN std_logic;
             write_tr_en     : IN std_logic;
             read_tr_en      : IN std_logic;
+            write_ready     : OUT std_logic;
             LVDS_IO_debug   : INOUT std_logic;
             data_out        : OUT std_logic_vector(15 DOWNTO 0);
             valid_out       : OUT std_logic;
@@ -61,6 +62,7 @@ ARCHITECTURE behavior OF PHY_top_tb IS
     SIGNAL valid_in_master     : std_logic;
     SIGNAL write_enable_master : std_logic;
     SIGNAL write_ready_master  : std_logic;
+    SIGNAL write_ready_slave   : std_logic;
     SIGNAL data_out_master     : std_logic_vector(15 DOWNTO 0);
     SIGNAL valid_out_master    : std_logic;
     SIGNAL read_enable_master  : std_logic;
@@ -99,8 +101,8 @@ BEGIN
         write_tr_en     => write_tr_en_slave,
         read_tr_en      => read_tr_en_slave,
         state_test      => Slave_state_test,
-        tx_ready_S_test => tx_ready_S_test
-
+        tx_ready_S_test => tx_ready_S_test,
+        write_ready     => write_ready_slave
     );
 
     uut_Master : PHY_controller PORT MAP(
@@ -144,25 +146,23 @@ BEGIN
 
         read_tr_en_slave    <= '1'; -- enable slave emulator for read transaction
         write_enable_master <= '1'; -- enable master write transaction
-        valid_in_master     <= '0';
+        -- valid_in_master     <= '0';
         WAIT FOR 150 ns;
         read_tr_en_slave    <= '0';
         write_enable_master <= '0';
         valid_in_master     <= '0';
 
         WAIT FOR 20000 ns;
-
-        data_in_slave  <= "1001000000001111";
-        valid_in_slave <= '1';
+        write_enable_master <= '0';
+        data_in_slave       <= "1001000000001111";
+        valid_in_slave      <= '1';
         WAIT FOR 200 ns;
-        write_tr_en_slave <= '1'; -- enable slave emulator for read transaction
 
-        WAIT FOR 200 ns;
         ------ Read data from the LVSD line 
         write_tr_en_slave  <= '1'; -- enable slave emulator for read transaction
         read_enable_master <= '1'; -- enable master read transaction
-
         WAIT FOR 150 ns;
+
         write_tr_en_slave  <= '0'; -- enable slave emulator for read transaction
         read_enable_master <= '0'; -- enable master write transaction
         WAIT FOR 20000 ns;
