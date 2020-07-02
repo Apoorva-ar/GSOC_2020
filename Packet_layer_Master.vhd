@@ -6,6 +6,7 @@
 -- 2 of the License, or (at your option) any later version.
 ----------------------------------------------------------------------------------
 -- Command tells burst length and write/read transaction and address
+
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.std_logic_arith.ALL;
@@ -46,6 +47,7 @@ ENTITY Packet_layer_Master IS
 END Packet_layer_Master;
 
 ARCHITECTURE behavioral OF Packet_layer_Master IS
+    
     ----------------------------------------------------------------------------------------
     ----------------------------- Component Declaration  -----------------------------------
     ----------------------------------------------------------------------------------------
@@ -138,6 +140,7 @@ BEGIN
     -----------------------------------------------------------------------
     ---------------------  Master User FSM -----------------------------
     -----------------------------------------------------------------------
+        
     PHY_MASTER_USER_FSM : PROCESS (clk_top, reset)
         VARIABLE cntr_burst : INTEGER := 0;
     BEGIN
