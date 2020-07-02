@@ -10,7 +10,7 @@ USE ieee.std_logic_1164.ALL;
 USE ieee.std_logic_arith.ALL;
 USE ieee.std_logic_unsigned.ALL;
 
-ENTITY PHY_data_path IS
+ENTITY PHY_Data_path IS
     GENERIC (
         DATA_SIZE : INTEGER := 10;
         FIFO_REQ  : BOOLEAN := FALSE);
@@ -36,9 +36,9 @@ ENTITY PHY_data_path IS
         i_sclk      : IN std_logic                     -- Clock from PHY Master clock gen
     );
 
-END PHY_data_path;
+END PHY_Data_path;
 
-ARCHITECTURE rtl_arch OF PHY_data_path IS
+ARCHITECTURE rtl_arch OF PHY_Data_path IS
 
     SIGNAL data_in_reg_i            : std_logic_vector(DATA_SIZE - 1 DOWNTO 0);
     SIGNAL data_in                  : std_logic_vector(DATA_SIZE - 1 DOWNTO 0);
