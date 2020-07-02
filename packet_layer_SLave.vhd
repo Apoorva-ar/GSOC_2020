@@ -1,3 +1,4 @@
+-- Copyright (C) 2020 Apoorva Arora
 -----------------------------------------------------------------------------------
 -- This program is free software: you can redistribute it and/or
 -- modify it under the terms of the GNU General Public License
@@ -18,24 +19,24 @@ ENTITY packet_layer_slave IS
     );
     PORT (
         -------------- System Interfaces ---------
-        clk_top, reset : IN STD_LOGIC;
+        clk_top, reset          : IN STD_LOGIC;
         -------------- Control channels ---------
-        command_out       : OUT std_logic_vector(COMMAND_LEN - 1 DOWNTO 0);
-        command_valid_out : OUT std_logic;
+        command_out             : OUT std_logic_vector(COMMAND_LEN - 1 DOWNTO 0);
+        command_valid_out       : OUT std_logic;
         ------------- DATA IO channel ------------
-        LVDS_IO    : INOUT std_logic;
-        LVDS_clock : IN std_logic;
+        LVDS_IO                 : INOUT std_logic;
+        LVDS_clock              : IN std_logic;
         ------- Address channel
-        -- address_in        : IN std_logic_vector(ADDRESS_LEN - 1 DOWNTO 0);
-        -- address_valid_in  : IN std_logic;
-        -- address_out       : OUT std_logic_vector(ADDRESS_LEN - 1 DOWNTO 0);
-        -- address_valid_out : OUT std_logic;
+        -- address_in           : IN std_logic_vector(ADDRESS_LEN - 1 DOWNTO 0);
+        -- address_valid_in     : IN std_logic;
+        -- address_out          : OUT std_logic_vector(ADDRESS_LEN - 1 DOWNTO 0);
+        -- address_valid_out    : OUT std_logic;
         ------- Data channel
-        data_in_S        : IN std_logic_vector(DATA_LEN - 1 DOWNTO 0);
-        data_valid_in_S  : IN std_logic;
-        data_in_ready_S  : OUT std_logic;
-        data_out_S       : OUT std_logic_vector(DATA_LEN - 1 DOWNTO 0);
-        data_valid_out_S : OUT std_logic;
+        data_in_S               : IN std_logic_vector(DATA_LEN - 1 DOWNTO 0);
+        data_valid_in_S         : IN std_logic;
+        data_in_ready_S         : OUT std_logic;
+        data_out_S              : OUT std_logic_vector(DATA_LEN - 1 DOWNTO 0);
+        data_valid_out_S        : OUT std_logic;
         ------------- Test Intefaces --------------
         test_1                 : OUT std_logic;
         test_2                 : OUT std_logic_vector(3 DOWNTO 0);
@@ -80,7 +81,8 @@ ARCHITECTURE behavioral OF packet_layer_slave IS
     ----------------------------- System Signals -------------------------------------------
     ----------------------------------------------------------------------------------------
 
-    TYPE state_S IS(IDLE, tx_transmit, tx_end_state, command_wait_state, tx_wait_state, wait_syn_state, command_read_state, parse_command_state, tx_state_count, rx_state);
+    TYPE state_S IS(IDLE, tx_transmit, tx_end_state, command_wait_state, tx_wait_state,
+                    wait_syn_state, command_read_state, parse_command_state, tx_state_count, rx_state);
     SIGNAL state_transaction  : state_S := IDLE;
     SIGNAL transaction_type   : std_logic; -- write/read transaction
     SIGNAL burst_length       : std_logic_vector(6 DOWNTO 0);
