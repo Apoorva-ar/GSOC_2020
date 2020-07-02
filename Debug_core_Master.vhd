@@ -51,7 +51,7 @@ ARCHITECTURE behavioral OF Debug_SPI_Master IS
     ----------------------------- Component Declaration  -----------------------------------
     ----------------------------------------------------------------------------------------
 
-    COMPONENT spi_master IS
+    COMPONENT SPI_Master IS
         GENERIC (
             DATA_SIZE : INTEGER := 32;
             FIFO_REQ  : BOOLEAN := True);
