@@ -6,6 +6,7 @@
 -- 2 of the License, or (at your option) any later version.
 ----------------------------------------------------------------------------------
 -- testbench with Slave SPI (Master) peripheral test
+
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
@@ -172,9 +173,11 @@ BEGIN
         data_out_user       => data_in_S,
         data_out_user_valid => data_valid_in_S
     );
+        
     -------------------------------------------------------------------------
     ------------------------ system clock generation ------------------------
     -------------------------------------------------------------------------
+        
     sampling_clock : PROCESS
     BEGIN
         clk_temp <= '0';
