@@ -32,7 +32,7 @@ ARCHITECTURE behavior OF PHY_top_tb IS
         );
     END COMPONENT;
 
-    COMPONENT PHY_Controller
+    COMPONENT PHY_Master_Controller
         PORT (
             clk_sys       : IN std_logic;
             clk_sample    : IN std_logic;
@@ -111,7 +111,7 @@ BEGIN
         write_ready     => write_ready_slave
     );
 
-    uut_Master : PHY_Controller PORT MAP(
+    uut_Master : PHY_Master_Controller PORT MAP(
         clk_sys       => clk_sys,
         clk_sample    => clk_sample,
         reset_top     => reset_top,
