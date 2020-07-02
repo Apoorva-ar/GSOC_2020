@@ -1,3 +1,4 @@
+-- Copyright (C) 2020 Apoorva Arora
 -----------------------------------------------------------------------------------
 -- This program is free software: you can redistribute it and/or
 -- modify it under the terms of the GNU General Public License
@@ -85,7 +86,8 @@ ARCHITECTURE behavioral OF PHY_slave_controller IS
     SIGNAL slave_CS            : std_logic_vector(3 DOWNTO 0)               := (OTHERS => '0');
     SIGNAL word_reg            : std_logic_vector(Data_Length - 1 DOWNTO 0) := (OTHERS => '0');
     SIGNAL DATA_Valid_SPI_M_I  : std_logic                                  := '0';
-    TYPE state_S_2 IS(IDLE, Write_transaction_latch, Write_transaction_tx, Write_transaction_tx_wait, Read_transaction_latch, Read_transaction_rx);
+    TYPE state_S_2 IS(IDLE, Write_transaction_latch, Write_transaction_tx,
+                      Write_transaction_tx_wait, Read_transaction_latch, Read_transaction_rx);
     SIGNAL state_transaction : state_S_2                                  := IDLE;
     SIGNAL CSN_SPI_M         : std_logic                                  := '0';
     SIGNAL Start_SPI_M       : std_logic                                  := '0';
