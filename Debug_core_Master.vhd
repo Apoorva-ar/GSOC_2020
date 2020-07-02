@@ -28,10 +28,10 @@ ENTITY Debug_SPI_Master IS
         -------------- System Interfaces ---------
         clk_sys, reset_top : IN STD_LOGIC;
         ------------- SPI Interfaces -------------
-        MOSI_debug : OUT std_logic;
-        MISO_debug : IN std_logic;
-        sclk_debug : OUT std_logic;
-        CS_debug   : OUT std_logic;
+        MOSI_debug          : OUT std_logic;
+        MISO_debug          : IN std_logic;
+        sclk_debug          : OUT std_logic;
+        CS_debug            : OUT std_logic;
         ------------- User interface ----------
         data_in_user        : IN std_logic_vector(16 - 1 DOWNTO 0);
         data_in_user_valid  : IN std_logic;
@@ -39,10 +39,10 @@ ENTITY Debug_SPI_Master IS
         data_out_user       : OUT std_logic_vector(16 - 1 DOWNTO 0);
         data_out_user_valid : OUT std_logic;
         ------------- Test Intefaces --------------
-        test_1 : OUT std_logic;
-        test_2 : OUT std_logic_vector(3 DOWNTO 0);
-        test_3 : OUT std_logic;
-        test_4 : OUT std_logic_vector(15 DOWNTO 0)
+        test_1              : OUT std_logic;
+        test_2              : OUT std_logic_vector(3 DOWNTO 0);
+        test_3              : OUT std_logic;
+        test_4              : OUT std_logic_vector(15 DOWNTO 0)
     );
 END Debug_SPI_Master;
 
