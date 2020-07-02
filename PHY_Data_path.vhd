@@ -5,6 +5,7 @@
 -- as published by the Free Software Foundation, either version
 -- 2 of the License, or (at your option) any later version.
 ----------------------------------------------------------------------------------
+
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.std_logic_arith.ALL;
@@ -95,6 +96,7 @@ BEGIN
     -- Data input latch process
     -- Latched only when slave enabled, Transmitter ready and wr is high.
     ----------------------------------------------------------------------------------------------------
+
     PROCESS (i_sys_clk, i_sys_rst)
     BEGIN
         IF (i_sys_rst = '1') THEN
@@ -105,9 +107,11 @@ BEGIN
             END IF;
         END IF;
     END PROCESS;
+            
     ---------------------------------------------------------------------------------------------------
     -- Re-register data to be transmitted
-    ----------------------------------------------------------------------------------------------------
+    ---------------------------------------------------------------------------------------------------
+            
     PROCESS (i_sys_clk, i_sys_rst)
     BEGIN
         IF (i_sys_rst = '1') THEN
@@ -129,6 +133,7 @@ BEGIN
             mosi_00_i <= txdata_reg_i(conv_integer(DATA_SIZE - tx_data_count_neg_sclk_i - 1));
         END IF;
     END PROCESS;
+            
     ----------------------------------------------------------------------------
     -- cpol=1 and cpha=0: data must be placed before falling edge of sclk  -------
     ----------------------------------------------------------------------------
@@ -145,6 +150,7 @@ BEGIN
     ----------------------------------------------------------------------------
     -- cpol=0 and cpha=1: data must be placed at rising edge of sclk  -------
     ----------------------------------------------------------------------------
+            
     PROCESS (i_sclk, i_sys_rst)
     BEGIN
         IF i_sys_rst = '1' THEN
@@ -179,6 +185,7 @@ BEGIN
     -- Tx count on falling edge of sclk for cpol=0 and cpha=0  -------
     -- and cpol=1 and cpha=1  				   -------
     ----------------------------------------------------------------------------
+            
     PROCESS (i_sclk, i_sys_rst)
     BEGIN
         IF (i_sys_rst = '1') THEN
@@ -194,10 +201,12 @@ BEGIN
             END IF;
         END IF;
     END PROCESS;
+            
     ----------------------------------------------------------------------------
     -- Tx count on rising edge of sclk for cpol=1 and cpha=0  -------
     -- and cpol=0 and cpha=1  				  -------
     ----------------------------------------------------------------------------
+            
     PROCESS (i_sclk, i_sys_rst)
     BEGIN
         IF (i_sys_rst = '1') THEN
@@ -235,6 +244,7 @@ BEGIN
     -- Transmit done generation
     -- Muxed based on CPOL and CPHA
     ----------------------------------------------------------------------------------------------------
+            
     PROCESS (i_sys_clk, i_sys_rst)
     BEGIN
         IF (i_sys_rst = '1') THEN
@@ -290,10 +300,11 @@ BEGIN
     ----------------------------------------------------------------------------
     --  Receiver Section  		------------------------------------------------
     ----------------------------------------------------------------------------
-    ----------------------------------------------------------------------------------------------------
+    ----------------------------------------------------------------------------
     -- Receive Data Register, mux it based on sampling
     -- Data latched based on Rx Done signal
-    ----------------------------------------------------------------------------------------------------
+    ----------------------------------------------------------------------------
+            
     PROCESS (i_sys_clk, i_sys_rst)
     BEGIN
         IF (i_sys_rst = '1') THEN
@@ -308,11 +319,13 @@ BEGIN
             END IF;
         END IF;
     END PROCESS;
+            
     ----------------------------------------------------------------------------
     --- MOSI Sampling : Sample at posedge of SCLK for 
     --                  1. i_cpol=0 and i_cpha=0 
     --                  2. i_cpol=1 and i_cpha=1 
     ----------------------------------------------------------------------------
+            
     PROCESS (i_sclk, i_sys_rst)
     BEGIN
         IF (i_sys_rst = '1') THEN
@@ -351,6 +364,7 @@ BEGIN
     -- 1. i_cpol=1 and i_cpha=0
     -- 2. i_cpol=0 and i_cpha=1
     ----------------------------------------------------------------------------
+            
     PROCESS (i_sclk, i_sys_rst)
     BEGIN
         IF (i_sys_rst = '1') THEN
@@ -386,6 +400,7 @@ BEGIN
     -- PHY Master Receiver Receive Done signal generator
     -- This is based on CPOL and CPHA
     ----------------------------------------------------------------------------
+            
     PROCESS (i_sys_clk, i_sys_rst)
     BEGIN
         IF (i_sys_rst = '1') THEN
@@ -402,6 +417,7 @@ BEGIN
             rx_done_reg3_i <= rx_done_reg2_i;
         END IF;
     END PROCESS;
+            
     ----------------------------------------------------------------------------------------------------
     -- Receiver ready at the end of reception.
     -- A valid receive data available at this time
@@ -419,10 +435,12 @@ BEGIN
             END IF;
         END IF;
     END PROCESS;
+            
     ----------------------------------------------------------------------------------------------------
     -- Receive error when external interface hasn't read previous data
     -- A new data received, but last received data hasn't been read yet.
     ----------------------------------------------------------------------------------------------------
+            
     PROCESS (i_sys_clk, i_sys_rst)
     BEGIN
         IF (i_sys_rst = '1') THEN
