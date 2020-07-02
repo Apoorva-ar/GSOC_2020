@@ -10,7 +10,7 @@ USE ieee.std_logic_1164.ALL;
 USE ieee.std_logic_arith.ALL;
 USE ieee.std_logic_unsigned.ALL;
 
-ENTITY PHY_slave_controller IS
+ENTITY PHY_Slave_Controller IS
     GENERIC (
         Data_Length : INTEGER   := 16;
         CPOL        : std_logic := '0';
@@ -32,10 +32,10 @@ ENTITY PHY_slave_controller IS
         sclk_debug      : IN std_logic;
         tx_ready_S_test : OUT std_logic
     );
-END PHY_slave_controller;
-ARCHITECTURE behavioral OF PHY_slave_controller IS
+END PHY_Slave_Controller;
+ARCHITECTURE behavioral OF PHY_Slave_Controller IS
 
-    COMPONENT PHY_slave IS
+    COMPONENT PHY_Slave IS
         GENERIC (
             DATA_SIZE : NATURAL := 16);
         PORT (
@@ -115,7 +115,7 @@ BEGIN
     ---------------------------------------------------------------------------
     ---------------------------------------------------------------------------
     ---------------------------------------------------------------------------
-    PHY_Slave_COMPONENT : PHY_slave
+    PHY_Slave_COMPONENT : PHY_Slave
     GENERIC MAP(
         DATA_SIZE => Data_Length)
     PORT MAP(
