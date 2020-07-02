@@ -10,7 +10,7 @@ USE ieee.std_logic_1164.ALL;
 USE ieee.std_logic_arith.ALL;
 USE ieee.std_logic_unsigned.ALL;
 
-ENTITY PHY_slave IS
+ENTITY PHY_Slave IS
     GENERIC (
         DATA_SIZE : NATURAL := 16);
     PORT (
@@ -36,9 +36,9 @@ ENTITY PHY_slave IS
         o_tx_no_ack : OUT std_logic
     );
 
-END PHY_slave;
+END PHY_Slave;
 
-ARCHITECTURE rtl_arch OF PHY_slave IS
+ARCHITECTURE rtl_arch OF PHY_Slave IS
     SIGNAL data_in_reg_i            : std_logic_vector(DATA_SIZE - 1 DOWNTO 0);
     SIGNAL rxdata_reg_i             : std_logic_vector(DATA_SIZE - 1 DOWNTO 0);
     SIGNAL txdata_reg_i             : std_logic_vector(DATA_SIZE - 1 DOWNTO 0);
