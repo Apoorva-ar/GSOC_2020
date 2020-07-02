@@ -10,7 +10,7 @@ USE ieee.std_logic_1164.ALL;
 USE ieee.std_logic_arith.ALL;
 USE ieee.std_logic_unsigned.ALL;
 
-ENTITY sclk_gen IS
+ENTITY PHY_sclk_gen IS
     GENERIC (
         DATA_SIZE : INTEGER);
     PORT (
@@ -27,9 +27,9 @@ ENTITY sclk_gen IS
         read_tr_en     : IN std_logic;
         o_sclk         : OUT std_logic
     );
-END sclk_gen;
+END PHY_sclk_gen;
 
-ARCHITECTURE count_arch OF sclk_gen IS
+ARCHITECTURE count_arch OF PHY_sclk_gen IS
 
     SIGNAL clk_periodby2_i        : std_logic_vector(7 DOWNTO 0);
     SIGNAL sclk_period_i          : std_logic_vector(7 DOWNTO 0);
