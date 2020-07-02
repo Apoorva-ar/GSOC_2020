@@ -27,7 +27,7 @@ USE ieee.std_logic_1164.ALL;
 USE ieee.std_logic_arith.ALL;
 USE ieee.std_logic_unsigned.ALL;
 
-ENTITY spi_master IS
+ENTITY SPI_Master IS
     GENERIC (
         DATA_SIZE : INTEGER := 16;
         FIFO_REQ  : BOOLEAN := True);
@@ -60,9 +60,9 @@ ENTITY spi_master IS
         o_sclk         : OUT std_logic;                    -- Master clock
         mosi_tri_en    : OUT std_logic
     );
-END spi_master;
+END SPI_Master;
 
-ARCHITECTURE spi_master_rtl OF spi_master IS
+ARCHITECTURE spi_master_rtl OF SPI_Master IS
 
     COMPONENT spi_sclk_gen
         GENERIC (
