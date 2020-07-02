@@ -5,6 +5,7 @@
 -- as published by the Free Software Foundation, either version
 -- 2 of the License, or (at your option) any later version.
 ----------------------------------------------------------------------------------
+
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.std_logic_arith.ALL;
@@ -54,14 +55,17 @@ ARCHITECTURE count_arch OF PHY_sclk_gen IS
         SPIM_DATA_TX_STATE, SPIM_HOLD_STATE, SPIM_TX2TX_WAIT_STATE);
     SIGNAL spim_clk_state_i : spim_clk_states;
 BEGIN
+    
     ------------------------------------------------------------------------------------------------
     -- Right shift by 1 to compute divide by 2 of clock period
     ------------------------------------------------------------------------------------------------
+    
     clk_periodby2_i <= '0' & i_clk_period(7 DOWNTO 1);
 
     ----------------------------------------------------------------------------------------------------
     -- SCLK generation - This a clock divider logic, which is enabled only when slave select is LOW.
     ----------------------------------------------------------------------------------------------------
+
     PROCESS (i_sys_clk, i_sys_rst)
     BEGIN
         IF i_sys_rst = '1' THEN
@@ -84,9 +88,11 @@ BEGIN
             END IF;
         END IF;
     END PROCESS;
+            
     ----------------------------------------------------------------------------------------------------
     -- Delayed version of divided clock, used to generate falling/rising edge of generated clock
     ----------------------------------------------------------------------------------------------------
+            
     PROCESS (i_sys_clk, i_sys_rst)
     BEGIN
         IF i_sys_rst = '1' THEN
@@ -95,9 +101,11 @@ BEGIN
             delay_clk_i <= div_clk_i;
         END IF;
     END PROCESS;
+            
     ----------------------------------------------------------------------------------------------------
     -- spi start registered...without which the FSM doesn't work!
     ----------------------------------------------------------------------------------------------------
+            
     PROCESS (i_sys_clk, i_sys_rst)
     BEGIN
         IF i_sys_rst = '1' THEN
@@ -110,10 +118,12 @@ BEGIN
             read_tr_enable_signal  <= read_tr_en;
         END IF;
     END PROCESS;
+            
     ----------------------------------------------------------------------------------------------------
     -- SCLK derived based on divide by clock period factor and CPOL.
     -- Output clock is generated only in data transaction state.
     ----------------------------------------------------------------------------------------------------
+            
     PROCESS (i_sys_clk, i_sys_rst)
     BEGIN
         IF i_sys_rst = '1' THEN
@@ -137,6 +147,7 @@ BEGIN
     -- for SPI Slave, controls setup and hold time before and after SCLK, time interval between
     -- two transactions.
     ----------------------------------------------------------------------------------------------------
+            
     PROCESS (i_sys_clk, i_sys_rst)
     BEGIN
         IF i_sys_rst = '1' THEN
@@ -215,6 +226,7 @@ BEGIN
     -- Delay Counter used for controlling setup, hold and interval between transactions.
     -- Delay counter enabled only when delay_count_start_i = '1'
     ------------------------------------------------------------------------------------------------
+            
     PROCESS (i_sys_clk, i_sys_rst)
     BEGIN
         IF i_sys_rst = '1' THEN
@@ -237,6 +249,7 @@ BEGIN
     ------------------------------------------------------------------------------------------------
     -- SCLK falling edge counter - determines number of bytes transmitted per SPI cycle
     ------------------------------------------------------------------------------------------------
+            
     PROCESS (i_sys_clk, i_sys_rst)
     BEGIN
         IF i_sys_rst = '1' THEN
