@@ -11,10 +11,10 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
 
-ENTITY PHY_master_tb IS
-END PHY_master_tb;
+ENTITY PHY_Master_tb IS
+END PHY_Master_tb;
 
-ARCHITECTURE behavior OF PHY_master_tb IS
+ARCHITECTURE behavior OF PHY_Master_tb IS
 
 	COMPONENT PHY_controller
 		PORT (
