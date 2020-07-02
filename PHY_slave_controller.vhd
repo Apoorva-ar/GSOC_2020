@@ -138,7 +138,7 @@ BEGIN
     );
 
     -----------------------------------------------------------------------
-    --------------------- SPI Master User FSM -----------------------------
+    --------------------- PHY Slave User FSM -----------------------------
     -----------------------------------------------------------------------
     PHY_Slave_USER_FSM : PROCESS (clk_sys, reset_top)
     BEGIN
@@ -146,9 +146,9 @@ BEGIN
             state_transaction   <= IDLE;
             request_word        <= '0'; -- read enable to FIFO
             data_valid_received <= '0';
-            write_valid_data    <= '0'; -- data valid flag to SMI_M
+            write_valid_data    <= '0'; -- data valid flag 
             chip_select         <= '1'; -- master chip select flag to PHY_M
-            start_trans         <= '0'; -- start SPI transaction flag
+            start_trans         <= '0'; -- start transaction flag
             start_wait_counter  <= '0';
             valid_out           <= '0';
         ELSIF rising_edge(clk_sys) THEN
