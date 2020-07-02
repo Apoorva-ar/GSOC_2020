@@ -5,6 +5,7 @@
 -- as published by the Free Software Foundation, either version
 -- 2 of the License, or (at your option) any later version.
 ----------------------------------------------------------------------------------
+
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.std_logic_arith.ALL;
@@ -75,6 +76,7 @@ BEGIN
     -- Data input latch process
     -- Latched only when slave enabled, Transmitter ready and wr is high.
     ----------------------------------------------------------------------------------------------------
+
     o_data <= rxdata_reg_i;
     PROCESS (i_sys_clk, i_sys_rst)
     BEGIN
@@ -93,6 +95,7 @@ BEGIN
     -- Receive Data Register, mux it based on sampling
     -- Data latched based on Rx Done signal
     ----------------------------------------------------------------------------------------------------
+            
     PROCESS (i_sys_clk, i_sys_rst)
     BEGIN
         IF (i_sys_rst = '1') THEN
@@ -110,7 +113,8 @@ BEGIN
 
     ---------------------------------------------------------------------------------------------------
     -- Re-register data to be transmitted
-    ----------------------------------------------------------------------------------------------------
+    ---------------------------------------------------------------------------------------------------
+            
     PROCESS (i_sys_clk, i_sys_rst)
     BEGIN
         IF (i_sys_rst = '1') THEN
@@ -128,6 +132,7 @@ BEGIN
     --                  1. i_cpol=0 and i_cpha=0 
     --                  2. i_cpol=1 and i_cpha=1 
     ----------------------------------------------------------------------------
+            
     PROCESS (i_sclk, i_sys_rst)
     BEGIN
         IF (i_sys_rst = '1') THEN
@@ -166,6 +171,7 @@ BEGIN
     -- 1. i_cpol=1 and i_cpha=0
     -- 2. i_cpol=0 and i_cpha=1
     ----------------------------------------------------------------------------
+            
     PROCESS (i_sclk, i_sys_rst)
     BEGIN
         IF (i_sys_rst = '1') THEN
@@ -196,10 +202,12 @@ BEGIN
             END IF;
         END IF;
     END PROCESS;
+            
     ----------------------------------------------------------------------------
     --  Slave Receiver Receive Done signal generator
     -- This is based on CPOL and CPHA
     ----------------------------------------------------------------------------
+            
     PROCESS (i_sys_clk, i_sys_rst)
     BEGIN
         IF (i_sys_rst = '1') THEN
@@ -216,6 +224,7 @@ BEGIN
             rx_done_reg3_i <= rx_done_reg2_i;
         END IF;
     END PROCESS;
+            
     ----------------------------------------------------------------------------------------------------
     -- Receiver ready at the end of reception.
     -- A valid receive data available at this time
@@ -261,11 +270,12 @@ BEGIN
             rx_error_reg_1_i <= rx_error_i;
         END IF;
     END PROCESS;
+            
     ----------------------------------------------------------------------------
     -- phy Slave Transmitter section  				      ----
     ----------------------------------------------------------------------------
     ----------------------------------------------------------------------------
-    -- cpol=0 and cpha=0: data must be placed before rising edge of sclk  -------
+    -- cpol=0 and cpha=0: data must be placed before rising edge of sclk  ------
     ----------------------------------------------------------------------------
 
     PROCESS (txdata_reg_i, tx_data_count_neg_sclk_i, i_lsb_first)
@@ -276,8 +286,9 @@ BEGIN
             miso_00_i <= txdata_reg_i(conv_integer(DATA_SIZE - tx_data_count_neg_sclk_i - 1));
         END IF;
     END PROCESS;
+            
     ----------------------------------------------------------------------------
-    -- cpol=1 and cpha=0: data must be placed before falling edge of sclk  -------
+    -- cpol=1 and cpha=0: data must be placed before falling edge of sclk  -----
     ----------------------------------------------------------------------------
 
     PROCESS (txdata_reg_i, tx_data_count_pos_sclk_i, i_lsb_first)
@@ -327,6 +338,7 @@ BEGIN
     -- Tx count on falling edge of sclk for cpol=0 and cpha=0  -------
     -- and cpol=1 and cpha=1  				   -------
     ----------------------------------------------------------------------------
+            
     PROCESS (i_sclk, i_sys_rst)
     BEGIN
         IF (i_sys_rst = '1') THEN
@@ -342,10 +354,12 @@ BEGIN
             END IF;
         END IF;
     END PROCESS;
+            
     ----------------------------------------------------------------------------
     -- Tx count on rising edge of sclk for cpol=1 and cpha=0  -------
     -- and cpol=0 and cpha=1  				  -------
     ----------------------------------------------------------------------------
+            
     PROCESS (i_sclk, i_sys_rst)
     BEGIN
         IF (i_sys_rst = '1') THEN
@@ -383,6 +397,7 @@ BEGIN
     -- Transmit done generation
     -- Muxed based on CPOL and CPHA
     ----------------------------------------------------------------------------------------------------
+            
     PROCESS (i_sys_clk, i_sys_rst)
     BEGIN
         IF (i_sys_rst = '1') THEN
@@ -453,6 +468,7 @@ BEGIN
     ------------------------------------------------------------------------------------------------
     -- Data Valid in  slave interface
     ------------------------------------------------------------------------------------------------
+            
     data_valid_proc : PROCESS (i_sys_clk, i_sys_rst)
     BEGIN                   -- process data_valid_proc
         IF i_sys_rst = '1' THEN -- asynchronous reset (active high)
