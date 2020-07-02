@@ -29,16 +29,16 @@ ENTITY PHY_master IS
         o_tx_error     : OUT std_logic;                                -- Transmitter error
         o_rx_error     : OUT std_logic;                                -- Receiver error
         o_intr         : OUT std_logic;
-        i_cpol         : IN std_logic;                                 -- CPOL value - 0 or 1
-        i_cpha         : IN std_logic;                                 -- CPHA value - 0 or 1 
-        i_lsb_first    : IN std_logic;                                 -- lsb first when '1' /msb first when 
-        i_PHY_start    : IN std_logic;                                 -- START PHY Master Transactions
-        i_clk_period   : IN std_logic_vector(7 DOWNTO 0);              -- SCL clock period in terms of i_sys_clk
-        i_setup_cycles : IN std_logic_vector(7 DOWNTO 0);              --  setup time  in terms of i_sys_clk
-        i_hold_cycles  : IN std_logic_vector(7 DOWNTO 0);              --  hold time  in terms of i_sys_clk
-        i_tx2tx_cycles : IN std_logic_vector(7 DOWNTO 0);              --  interval between data transactions in terms of i_sys_clk
-        PHY_M_IO       : INOUT std_logic;                              -- LVDS bidirectional data link
-        o_sclk         : OUT std_logic;                                -- Master clock
+        i_cpol         : IN std_logic;                    -- CPOL value - 0 or 1
+        i_cpha         : IN std_logic;                    -- CPHA value - 0 or 1 
+        i_lsb_first    : IN std_logic;                    -- lsb first when '1' /msb first when 
+        i_PHY_start    : IN std_logic;                    -- START PHY Master Transactions
+        i_clk_period   : IN std_logic_vector(7 DOWNTO 0); -- SCL clock period in terms of i_sys_clk
+        i_setup_cycles : IN std_logic_vector(7 DOWNTO 0); --  setup time  in terms of i_sys_clk
+        i_hold_cycles  : IN std_logic_vector(7 DOWNTO 0); --  hold time  in terms of i_sys_clk
+        i_tx2tx_cycles : IN std_logic_vector(7 DOWNTO 0); --  interval between data transactions in terms of i_sys_clk
+        PHY_M_IO       : INOUT std_logic;                 -- LVDS bidirectional data link
+        o_sclk         : OUT std_logic;                   -- Master clock
         mosi_tri_en    : OUT std_logic
     );
 END PHY_master;
