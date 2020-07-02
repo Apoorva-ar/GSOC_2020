@@ -6,6 +6,7 @@
 -- 2 of the License, or (at your option) any later version.
 ----------------------------------------------------------------------------------
 -- Command tells burst length and write/read transaction and address
+
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.std_logic_arith.ALL;
@@ -49,6 +50,7 @@ ENTITY Packet_layer_Slave IS
 END Packet_layer_Slave;
 
 ARCHITECTURE behavioral OF Packet_layer_Slave IS
+    
     ----------------------------------------------------------------------------------------
     ----------------------------- Component Declaration  -----------------------------------
     ----------------------------------------------------------------------------------------
@@ -102,6 +104,7 @@ ARCHITECTURE behavioral OF Packet_layer_Slave IS
 BEGIN
     b_length_test <= burst_length;
     -- tr_type_test  <= transaction_type;
+
     ----------------------------------------------------------------------------------------
     ----------------------------- Component Instantiation  ---------------------------------
     ----------------------------------------------------------------------------------------
@@ -129,9 +132,11 @@ BEGIN
     test_1                 <= data_valid_out_PHY;
     test_3                 <= read_tr_en_signal;
     slave_cntrl_state_test <= slave_state;
+
     -----------------------------------------------------------------------
     ---------------------  Slave User FSM -----------------------------
     -----------------------------------------------------------------------
+
     PACKET_SLAVE_USER_FSM : PROCESS (clk_top, reset)
         VARIABLE cntr_burst : std_logic_vector(6 DOWNTO 0) := "0000000";
     BEGIN
