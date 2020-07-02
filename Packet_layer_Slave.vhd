@@ -11,7 +11,7 @@ USE ieee.std_logic_1164.ALL;
 USE ieee.std_logic_arith.ALL;
 USE ieee.std_logic_signed.ALL;
 
-ENTITY packet_layer_slave IS
+ENTITY Packet_layer_Slave IS
     GENERIC (
         DATA_LEN    : INTEGER := 16;
         ADDRESS_LEN : INTEGER := 5;
@@ -46,14 +46,14 @@ ENTITY packet_layer_slave IS
         tr_type_test           : OUT std_logic;
         slave_cntrl_state_test : OUT std_logic_vector(2 DOWNTO 0)
     );
-END packet_layer_slave;
+END Packet_layer_Slave;
 
-ARCHITECTURE behavioral OF packet_layer_slave IS
+ARCHITECTURE behavioral OF Packet_layer_Slave IS
     ----------------------------------------------------------------------------------------
     ----------------------------- Component Declaration  -----------------------------------
     ----------------------------------------------------------------------------------------
 
-    COMPONENT PHY_slave_controller IS
+    COMPONENT PHY_Slave_Controller IS
         GENERIC (
             Data_Length : INTEGER   := 16;
             CPOL        : std_logic := '0';
@@ -106,7 +106,7 @@ BEGIN
     ----------------------------- Component Instantiation  ---------------------------------
     ----------------------------------------------------------------------------------------
 
-    PHY_Master_controller_COMPONENT : PHY_slave_controller
+    PHY_Slave_Controller_COMPONENT : PHY_Slave_Controller
     GENERIC MAP(
         Data_Length => DATA_LEN,
         CPOL        => '0',
