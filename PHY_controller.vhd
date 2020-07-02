@@ -1,4 +1,4 @@
--- (MASTER LVDS_SERDES with FIFO buffer)
+-- Copyright (C) 2020 Apoorva Arora
 -----------------------------------------------------------------------------------
 -- This program is free software: you can redistribute it and/or
 -- modify it under the terms of the GNU General Public License
@@ -14,12 +14,12 @@ ENTITY PHY_controller IS
     GENERIC (
         WORD_SIZE         : INTEGER                      := 48;
         Data_Length       : INTEGER                      := 16;
-        SETUP_WORD_CYCLES : STD_LOGIC_VECTOR(9 DOWNTO 0) := "0010010000"; -- 144 cycles (48MHz) for 3us
-        INTER_WORD_CYCLES : STD_LOGIC_VECTOR(9 DOWNTO 0) := "1001110000"; -- 624 cycles for 13us
-        INTER_DATA_CYCLES : STD_LOGIC_VECTOR(9 DOWNTO 0) := "0001100000"; -- 96 cycles (48 MHz) for 2us
+        SETUP_WORD_CYCLES : STD_LOGIC_VECTOR(9 DOWNTO 0) := "0010010000"; -- 144 cycles 
+        INTER_WORD_CYCLES : STD_LOGIC_VECTOR(9 DOWNTO 0) := "1001110000"; -- 624 cycles 
+        INTER_DATA_CYCLES : STD_LOGIC_VECTOR(9 DOWNTO 0) := "0001100000"; -- 96 cycles 
         CPOL              : std_logic                    := '0';
         CPHA              : std_logic                    := '1';
-        CLK_PERIOD        : std_logic_vector(7 DOWNTO 0) := "00011110"; -- 30 cycles for 1.6MHz sclk from 48 Mhz system clock
+        CLK_PERIOD        : std_logic_vector(7 DOWNTO 0) := "00011110"; -- 30 cycles 
         SETUP_CYCLES      : std_logic_vector(7 DOWNTO 0) := "00000110"; -- 6 cycles
         HOLD_CYCLES       : std_logic_vector(7 DOWNTO 0) := "00000110"; -- 6 cycles
         TX2TX_CYCLES      : std_logic_vector(7 DOWNTO 0) := "00000010"
@@ -129,7 +129,9 @@ ARCHITECTURE behavioral OF PHY_controller IS
     SIGNAL start_wait_counter  : std_logic                                  := '0';
     SIGNAL slave_CS            : std_logic_vector(3 DOWNTO 0)               := (OTHERS => '0');
     SIGNAL word_reg            : std_logic_vector(Data_Length - 1 DOWNTO 0) := (OTHERS => '0');
-    TYPE state_S IS(IDLE, wait_end_transaction, rx_end_state, TX_WAIT, LATCH_WORD, LATCH_D1, TRANSMIT_D1, wait_transmission_D1, END_TRANSACTION, SETUP_WORD, RX_transaction, WAIT_RX_D1, RX_latch_state);
+    TYPE state_S IS(IDLE, wait_end_transaction, rx_end_state, TX_WAIT, LATCH_WORD,
+                    LATCH_D1, TRANSMIT_D1, wait_transmission_D1, END_TRANSACTION,
+                    SETUP_WORD, RX_transaction, WAIT_RX_D1, RX_latch_state);
     SIGNAL state_transaction : state_S := IDLE;
     TYPE state_S_2 IS(IDLE, counter_state, WAIT_empty_state);
     SIGNAL state_FIFO           : state_S_2                                  := counter_state;
@@ -253,7 +255,7 @@ BEGIN
                     test_2       <= "0011";
                     request_word <= '0'; -- disable the read enable to FIFO
                     -- word_reg     <= FIFO_data_out(Data_Length - 1 DOWNTO 0); -- latch/register the word from FIFO
-                    IF setup_word_wait = '1' THEN -- if the wait is equal to the required setup word cycles then change state to latch first element of the word
+                    IF setup_word_wait = '1' THEN -- latch first element of the word
                         state_transaction  <= LATCH_D1;
                         start_wait_counter <= '0'; -- stop/reset the wait counter
                     END IF;
@@ -283,7 +285,7 @@ BEGIN
                     test_2 <= "0111";
                     IF tx_ready_M = '1' THEN
                         state_transaction  <= wait_end_transaction; --IDLE;
-                        start_wait_counter <= '1';                  -- start counter for delay before sending first data element
+                        start_wait_counter <= '1';                  -- start counter for delay 
                     END IF;
                 WHEN wait_end_transaction =>
                     test_2 <= "1111";
