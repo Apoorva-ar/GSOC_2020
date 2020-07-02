@@ -5,6 +5,7 @@
 -- as published by the Free Software Foundation, either version
 -- 2 of the License, or (at your option) any later version.
 ----------------------------------------------------------------------------------
+
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.std_logic_arith.ALL;
@@ -48,6 +49,7 @@ ENTITY PHY_Master_Controller IS
 END PHY_Master_Controller;
 
 ARCHITECTURE behavioral OF PHY_Master_Controller IS
+    
     ----------------------------------------------------------------------------------------
     ----------------------------- Component Declaration  -----------------------------------
     ----------------------------------------------------------------------------------------
@@ -110,6 +112,7 @@ ARCHITECTURE behavioral OF PHY_Master_Controller IS
     ----------------------------------------------------------------------------------------
     ----------------------------- System Signals -------------------------------------------
     ----------------------------------------------------------------------------------------
+        
     SIGNAL data_valid_received : std_logic                                  := '0';
     SIGNAL fifo_data_request   : std_logic                                  := '0';
     SIGNAL tx_ready_M          : STD_LOGIC                                  := '0';
@@ -167,6 +170,7 @@ BEGIN
     ---------------------------------------------------------------------------
     ---------------------------------------------------------------------------
     ---------------------------------------------------------------------------
+
     PHY_Master_COMPONENT : PHY_Master
     GENERIC MAP(
         DATA_SIZE => Data_Length,
@@ -203,6 +207,7 @@ BEGIN
     -----------------------------------------------------------------------
     ---------------------   Master User FSM -----------------------------
     -----------------------------------------------------------------------
+
     PHY_MASTER_USER_FSM : PROCESS (clk_sys, reset_top)
     BEGIN
         IF reset_top = '1' THEN
@@ -328,10 +333,12 @@ BEGIN
             END CASE;
         END IF;
     END PROCESS;
+            
     ------------------------------------------------------------------------------------------------
     ------ Wait Counter used for controlling wait stages between LVDS transactions -----------------
     ------------------ wait counter enabled only when delay_count_start_i = '1' --------------------
     ------------------------------------------------------------------------------------------------
+            
     PROCESS (clk_sys, reset_top)
     BEGIN
         IF reset_top = '1' THEN
