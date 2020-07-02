@@ -8,4 +8,3 @@ prj_src add "/packet_layer_tb.vhd" "/packet_layer_testbench.vhd" "/PHY_top_tb.vh
 prj_project save
 prj_run Synthesis -impl impl1
 prj_run PAR -impl impl1
-prj_project close
