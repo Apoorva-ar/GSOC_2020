@@ -45,7 +45,7 @@ END PHY_Master;
 
 ARCHITECTURE PHY_master_rtl OF PHY_Master IS
 
-    COMPONENT sclk_gen
+    COMPONENT PHY_sclk_gen
         GENERIC (
             DATA_SIZE : INTEGER);
         PORT (
@@ -98,7 +98,7 @@ BEGIN
 
     o_sclk <= sclk_i;
 
-    sclk_gen_u0 : sclk_gen
+    sclk_gen_u0 : PHY_sclk_gen
     GENERIC MAP(
         DATA_SIZE => DATA_SIZE)
     PORT MAP(
