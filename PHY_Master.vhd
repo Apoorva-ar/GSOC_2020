@@ -10,7 +10,7 @@ USE ieee.std_logic_1164.ALL;
 USE ieee.std_logic_arith.ALL;
 USE ieee.std_logic_unsigned.ALL;
 
-ENTITY PHY_master IS
+ENTITY PHY_Master IS
     GENERIC (
         DATA_SIZE : INTEGER := 16;
         FIFO_REQ  : BOOLEAN := True);
@@ -41,9 +41,9 @@ ENTITY PHY_master IS
         o_sclk         : OUT std_logic;                   -- Master clock
         mosi_tri_en    : OUT std_logic
     );
-END PHY_master;
+END PHY_Master;
 
-ARCHITECTURE PHY_master_rtl OF PHY_master IS
+ARCHITECTURE PHY_master_rtl OF PHY_Master IS
 
     COMPONENT sclk_gen
         GENERIC (
@@ -64,7 +64,7 @@ ARCHITECTURE PHY_master_rtl OF PHY_master IS
         );
     END COMPONENT;
 
-    COMPONENT PHY_data_path
+    COMPONENT PHY_Data_path
         GENERIC (
             DATA_SIZE : INTEGER;
             FIFO_REQ  : BOOLEAN);
