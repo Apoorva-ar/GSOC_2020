@@ -1,4 +1,5 @@
------------------------------------------------------------------------------------
+-- Copyright (C) 2020 Apoorva Arora
+
 -- This program is free software: you can redistribute it and/or
 -- modify it under the terms of the GNU General Public License
 -- as published by the Free Software Foundation, either version
@@ -13,12 +14,12 @@ ENTITY Debug_SPI_Master IS
     GENERIC (
         WORD_SIZE         : INTEGER                      := 48;
         Data_Length       : INTEGER                      := 16;
-        SETUP_WORD_CYCLES : STD_LOGIC_VECTOR(9 DOWNTO 0) := "0010010000"; -- 144 cycles (48MHz) for 3us
-        INTER_WORD_CYCLES : STD_LOGIC_VECTOR(9 DOWNTO 0) := "1001110000"; -- 624 cycles for 13us
-        INTER_DATA_CYCLES : STD_LOGIC_VECTOR(9 DOWNTO 0) := "0001100000"; -- 96 cycles (48 MHz) for 2us
+        SETUP_WORD_CYCLES : STD_LOGIC_VECTOR(9 DOWNTO 0) := "0010010000"; -- 144 cycles 
+        INTER_WORD_CYCLES : STD_LOGIC_VECTOR(9 DOWNTO 0) := "1001110000"; -- 624 cycles
+        INTER_DATA_CYCLES : STD_LOGIC_VECTOR(9 DOWNTO 0) := "0001100000"; -- 96 cycles 
         CPOL              : std_logic                    := '0';
         CPHA              : std_logic                    := '1';
-        CLK_PERIOD        : std_logic_vector(7 DOWNTO 0) := "00011110"; -- 30 cycles for 1.6MHz sclk from 48 Mhz system clock
+        CLK_PERIOD        : std_logic_vector(7 DOWNTO 0) := "00011110"; -- 30 cycles 
         SETUP_CYCLES      : std_logic_vector(7 DOWNTO 0) := "00000110"; -- 6 cycles
         HOLD_CYCLES       : std_logic_vector(7 DOWNTO 0) := "00000110"; -- 6 cycles
         TX2TX_CYCLES      : std_logic_vector(7 DOWNTO 0) := "00000010"
@@ -75,7 +76,7 @@ ARCHITECTURE behavioral OF Debug_SPI_Master IS
             i_clk_period   : IN std_logic_vector(7 DOWNTO 0);              -- SCL clock period in terms of i_sys_clk
             i_setup_cycles : IN std_logic_vector(7 DOWNTO 0);              -- SPIM setup time  in terms of i_sys_clk
             i_hold_cycles  : IN std_logic_vector(7 DOWNTO 0);              -- SPIM hold time  in terms of i_sys_clk
-            i_tx2tx_cycles : IN std_logic_vector(7 DOWNTO 0);              -- SPIM interval between data transactions in terms of i_sys_clk
+            i_tx2tx_cycles : IN std_logic_vector(7 DOWNTO 0);              -- SPIM interval between data transactions
             o_slave_csn    : OUT std_logic_vector(3 DOWNTO 0);             -- SPI Slave select (chip select) active low
             o_mosi         : OUT std_logic;                                -- Master output to Slave
             i_miso         : IN std_logic;                                 -- Master input from Slave
@@ -122,7 +123,10 @@ ARCHITECTURE behavioral OF Debug_SPI_Master IS
     SIGNAL slave_CS           : std_logic_vector(3 DOWNTO 0)               := (OTHERS => '0');
     SIGNAL word_reg           : std_logic_vector(Data_Length - 1 DOWNTO 0) := (OTHERS => '0');
     SIGNAL DATA_Valid_SPI_M_I : std_logic                                  := '0';
-    TYPE state_S IS(IDLE, LATCH_WORD, LATCH_D1, TRANSMIT_D1, wait_transmission_D1, LATCH_D2, TRANSMIT_D2, wait_transmission_D2, LATCH_D3, TRANSMIT_D3, wait_transmission_D3, END_TRANSACTION, WAIT_INTR_D1D2, WAIT_INTR_D2D3, SETUP_WORD);
+    TYPE state_S IS(IDLE, LATCH_WORD, LATCH_D1, TRANSMIT_D1, wait_transmission_D1,
+                    LATCH_D2, TRANSMIT_D2, wait_transmission_D2, LATCH_D3, TRANSMIT_D3,
+                    wait_transmission_D3, END_TRANSACTION, WAIT_INTR_D1D2,
+                    WAIT_INTR_D2D3, SETUP_WORD);
     SIGNAL state_transaction : state_S := IDLE;
     TYPE state_S_2 IS(IDLE, counter_state, WAIT_empty_state);
     SIGNAL state_FIFO        : state_S_2                                  := counter_state;
@@ -240,7 +244,7 @@ BEGIN
                 WHEN SETUP_WORD =>
                     request_word <= '0';           -- disable the read enable to FIFO
                     word_reg     <= FIFO_data_out; -- latch/register the word from FIFO
-                    IF setup_word_wait = '1' THEN  -- if the wait is equal to the required setup word cycles then change state to latch first element of the word
+                    IF setup_word_wait = '1' THEN  -- latch first element of the word
                         state_transaction  <= LATCH_D1;
                         start_wait_counter <= '0'; -- stop/reset the wait counter
                     END IF;
