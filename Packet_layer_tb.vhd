@@ -3,12 +3,12 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
 
-ENTITY packet_layer_Master_SPI_tb IS
-END packet_layer_Master_SPI_tb;
+ENTITY Packet_layer_tb IS
+END Packet_layer_tb;
 
-ARCHITECTURE behavior OF packet_layer_Master_SPI_tb IS
+ARCHITECTURE behavior OF Packet_layer_tb IS
 
-    COMPONENT packet_layer_Master
+    COMPONENT Packet_layer_Master
         PORT (
             clk_top          : IN std_logic;
             reset            : IN std_logic;
@@ -30,7 +30,7 @@ ARCHITECTURE behavior OF packet_layer_Master_SPI_tb IS
         );
     END COMPONENT;
 
-    COMPONENT packet_layer_slave IS
+    COMPONENT Packet_layer_Slave IS
         PORT (
             clk_top, reset         : IN STD_LOGIC;
             command_out            : OUT std_logic_vector(16 - 1 DOWNTO 0);
@@ -112,7 +112,7 @@ ARCHITECTURE behavior OF packet_layer_Master_SPI_tb IS
 BEGIN
 
     -- Please check and add your generic clause manually
-    uut_master : packet_layer_Master PORT MAP(
+    uut_master : Packet_layer_Master PORT MAP(
         b_length_test    => b_length_test,
         tr_type_test     => tr_type_test,
         clk_top          => clk_top,
@@ -132,7 +132,7 @@ BEGIN
         test_4           => test_4
     );
 
-    uut_slave : packet_layer_slave PORT MAP(
+    uut_slave : Packet_layer_Slave PORT MAP(
         clk_top                => clk_top,
         reset                  => reset,
         command_out            => command_out_S,
