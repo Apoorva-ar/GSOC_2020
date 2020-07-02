@@ -1,6 +1,27 @@
 
----------------------------------------------------------------------------------------------------
-
+--   ==================================================================
+--   >>>>>>>>>>>>>>>>>>>>>>> COPYRIGHT NOTICE <<<<<<<<<<<<<<<<<<<<<<<<<
+--   ------------------------------------------------------------------
+--   Copyright (c) 2013 by Lattice Semiconductor Corporation
+--   ALL RIGHTS RESERVED 
+--   ------------------------------------------------------------------
+--
+--   Permission:
+--
+--      Lattice SG Pte. Ltd. grants permission to use this code
+--      pursuant to the terms of the Lattice Reference Design License Agreement. 
+--
+--
+--   Disclaimer:
+--
+--      This VHDL or Verilog source code is intended as a design reference
+--      which illustrates how these types of functions can be implemented.
+--      It is the user's responsibility to verify their design for
+--      consistency and functionality through the use of formal
+--      verification methods.  Lattice provides no warranty
+--      regarding the use or functionality of this code.
+--
+--   --------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
