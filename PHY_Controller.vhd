@@ -10,7 +10,7 @@ USE ieee.std_logic_1164.ALL;
 USE ieee.std_logic_arith.ALL;
 USE ieee.std_logic_signed.ALL;
 
-ENTITY PHY_controller IS
+ENTITY PHY_Controller IS
     GENERIC (
         WORD_SIZE         : INTEGER                      := 48;
         Data_Length       : INTEGER                      := 16;
@@ -45,14 +45,14 @@ ENTITY PHY_controller IS
         test_3 : OUT std_logic;
         test_4 : OUT std_logic_vector(15 DOWNTO 0)
     );
-END PHY_controller;
+END PHY_Controller;
 
-ARCHITECTURE behavioral OF PHY_controller IS
+ARCHITECTURE behavioral OF PHY_Controller IS
     ----------------------------------------------------------------------------------------
     ----------------------------- Component Declaration  -----------------------------------
     ----------------------------------------------------------------------------------------
 
-    COMPONENT PHY_master IS
+    COMPONENT PHY_Master IS
         GENERIC (
             DATA_SIZE : INTEGER := 32;
             FIFO_REQ  : BOOLEAN := True);
@@ -167,7 +167,7 @@ BEGIN
     ---------------------------------------------------------------------------
     ---------------------------------------------------------------------------
     ---------------------------------------------------------------------------
-    PHY_Master_COMPONENT : PHY_master
+    PHY_Master_COMPONENT : PHY_Master
     GENERIC MAP(
         DATA_SIZE => Data_Length,
         FIFO_REQ  => False)
