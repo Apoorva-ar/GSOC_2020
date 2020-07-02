@@ -116,7 +116,7 @@ BEGIN
         o_sclk         => sclk_i
     );
 
-    phy_data_path_u1 : PHY_data_path
+    phy_data_path_u1 : PHY_Data_path
     GENERIC MAP(
         DATA_SIZE => DATA_SIZE,
         FIFO_REQ  => FIFO_REQ)
