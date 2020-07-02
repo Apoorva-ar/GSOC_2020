@@ -5,6 +5,7 @@
 -- as published by the Free Software Foundation, either version
 -- 2 of the License, or (at your option) any later version.
 ----------------------------------------------------------------------------------
+
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
@@ -79,9 +80,11 @@ ARCHITECTURE behavior OF PHY_top_tb IS
     SIGNAL Slave_state_test    : std_logic_vector(2 DOWNTO 0);
     SIGNAL tx_ready_S_test     : std_logic;
 BEGIN
+    
     -------------------------------------------------------------------------
     ------------------------ system clock generation ------------------------
     -------------------------------------------------------------------------
+    
     sampling_clock : PROCESS
     BEGIN
         clk_temp <= '0';
@@ -92,9 +95,11 @@ BEGIN
         END LOOP;
     END PROCESS;
     clk_sys <= clk_temp; -- 1.6 MHz
+
     --------------------------------------------------------------------------------------------------------
     --------------------------------- Component instantiation ----------------------------------------------
     --------------------------------------------------------------------------------------------------------
+
     uut_Slave : PHY_Slave_Controller PORT MAP(
         clk_sys         => clk_sys,
         reset_top       => reset_top,
@@ -129,9 +134,11 @@ BEGIN
         test_3        => test_3,
         test_4        => test_4
     );
+        
     -------------------------------------------------------------------------------------------------------------
     ------------------------------------ System Stimuli Process -------------------------------------------------
     -------------------------------------------------------------------------------------------------------------
+        
     tb : PROCESS
     BEGIN
         ------- reset assertion
