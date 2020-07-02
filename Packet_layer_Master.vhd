@@ -11,7 +11,7 @@ USE ieee.std_logic_1164.ALL;
 USE ieee.std_logic_arith.ALL;
 USE ieee.std_logic_signed.ALL;
 
-ENTITY packet_layer_Master IS
+ENTITY Packet_layer_Master IS
     GENERIC (
         DATA_LEN    : INTEGER := 16;
         ADDRESS_LEN : INTEGER := 5;
@@ -43,14 +43,14 @@ ENTITY packet_layer_Master IS
         test_3         : OUT std_logic;
         test_4         : OUT std_logic_vector(15 DOWNTO 0)
     );
-END packet_layer_Master;
+END Packet_layer_Master;
 
-ARCHITECTURE behavioral OF packet_layer_Master IS
+ARCHITECTURE behavioral OF Packet_layer_Master IS
     ----------------------------------------------------------------------------------------
     ----------------------------- Component Declaration  -----------------------------------
     ----------------------------------------------------------------------------------------
 
-    COMPONENT PHY_controller IS
+    COMPONENT PHY_Master_controller IS
         GENERIC (
             WORD_SIZE         : INTEGER                      := 48;
             Data_Length       : INTEGER                      := 16;
@@ -107,7 +107,7 @@ BEGIN
     ----------------------------- Component Instantiation  ---------------------------------
     ----------------------------------------------------------------------------------------
 
-    PHY_Master_controller_COMPONENT : PHY_controller
+    PHY_Master_controller_COMPONENT : PHY_Master_controller
     GENERIC MAP(
         WORD_SIZE         => 48,
         Data_Length       => DATA_LEN,
