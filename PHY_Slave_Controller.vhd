@@ -5,6 +5,7 @@
 -- as published by the Free Software Foundation, either version
 -- 2 of the License, or (at your option) any later version.
 ----------------------------------------------------------------------------------
+
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.std_logic_arith.ALL;
@@ -65,6 +66,7 @@ ARCHITECTURE behavioral OF PHY_Slave_Controller IS
     ----------------------------------------------------------------------------------------
     ----------------------------- System Signals -------------------------------------------
     ----------------------------------------------------------------------------------------
+
     SIGNAL data_valid_received : std_logic                                  := '0';
     SIGNAL fifo_data_request   : std_logic                                  := '0';
     SIGNAL tx_ready_S          : STD_LOGIC                                  := '0';
@@ -112,9 +114,11 @@ ARCHITECTURE behavioral OF PHY_Slave_Controller IS
     SIGNAL PHY_data_out      : std_logic_vector(Data_Length - 1 DOWNTO 0);
 BEGIN
     tx_ready_S_test <= rx_ready_S;
+
     ---------------------------------------------------------------------------
     ---------------------------------------------------------------------------
     ---------------------------------------------------------------------------
+
     PHY_Slave_COMPONENT : PHY_Slave
     GENERIC MAP(
         DATA_SIZE => Data_Length)
@@ -140,6 +144,7 @@ BEGIN
     -----------------------------------------------------------------------
     --------------------- PHY Slave User FSM -----------------------------
     -----------------------------------------------------------------------
+        
     PHY_Slave_USER_FSM : PROCESS (clk_sys, reset_top)
     BEGIN
         IF reset_top = '1' THEN
