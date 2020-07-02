@@ -14,7 +14,7 @@ END PHY_top_tb;
 
 ARCHITECTURE behavior OF PHY_top_tb IS
 
-    COMPONENT PHY_slave_controller
+    COMPONENT PHY_Slave_Controller
         PORT (
             clk_sys         : IN std_logic;
             reset_top       : IN std_logic;
@@ -32,7 +32,7 @@ ARCHITECTURE behavior OF PHY_top_tb IS
         );
     END COMPONENT;
 
-    COMPONENT PHY_controller
+    COMPONENT PHY_Controller
         PORT (
             clk_sys       : IN std_logic;
             clk_sample    : IN std_logic;
@@ -95,7 +95,7 @@ BEGIN
     --------------------------------------------------------------------------------------------------------
     --------------------------------- Component instantiation ----------------------------------------------
     --------------------------------------------------------------------------------------------------------
-    uut_Slave : PHY_slave_controller PORT MAP(
+    uut_Slave : PHY_Slave_Controller PORT MAP(
         clk_sys         => clk_sys,
         reset_top       => reset_top,
         LVDS_IO_debug   => LVDS_IO_debug,
@@ -111,7 +111,7 @@ BEGIN
         write_ready     => write_ready_slave
     );
 
-    uut_Master : PHY_controller PORT MAP(
+    uut_Master : PHY_Controller PORT MAP(
         clk_sys       => clk_sys,
         clk_sample    => clk_sample,
         reset_top     => reset_top,
