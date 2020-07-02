@@ -1,3 +1,4 @@
+-- Copyright (C) 2020 Apoorva Arora
 -----------------------------------------------------------------------------------
 -- This program is free software: you can redistribute it and/or
 -- modify it under the terms of the GNU General Public License
@@ -23,8 +24,8 @@ ENTITY packet_layer_Master IS
         command_in       : IN std_logic_vector(COMMAND_LEN - 1 DOWNTO 0);
         command_valid_in : IN std_logic;
         ------------- DATA IO channel ------------
-        LVDS_IO    : INOUT std_logic;
-        LVDS_clock : OUT std_logic;
+        LVDS_IO          : INOUT std_logic;
+        LVDS_clock       : OUT std_logic;
         ------- Address channel
         -- address_in        : IN std_logic_vector(ADDRESS_LEN - 1 DOWNTO 0);
         -- address_valid_in  : IN std_logic;
@@ -37,10 +38,10 @@ ENTITY packet_layer_Master IS
         data_out       : OUT std_logic_vector(DATA_LEN - 1 DOWNTO 0);
         data_valid_out : OUT std_logic;
         ------------- Test Intefaces --------------
-        test_1 : OUT std_logic;
-        test_2 : OUT std_logic_vector(3 DOWNTO 0);
-        test_3 : OUT std_logic;
-        test_4 : OUT std_logic_vector(15 DOWNTO 0)
+        test_1         : OUT std_logic;
+        test_2         : OUT std_logic_vector(3 DOWNTO 0);
+        test_3         : OUT std_logic;
+        test_4         : OUT std_logic_vector(15 DOWNTO 0)
     );
 END packet_layer_Master;
 
