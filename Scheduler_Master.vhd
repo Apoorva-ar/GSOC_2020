@@ -637,8 +637,5 @@ BEGIN
     read_data_latch_1 <= data_out_PHY;
     read_data_latch_2 <= data_out_PHY;
     read_data_latch_3 <= data_out_PHY;
-    -- fifo read logic read channel
-    -- data_out <=
-    --     data_valid_out
-    -- 
+
 END behavioral;
