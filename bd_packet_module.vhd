@@ -45,28 +45,28 @@ ENTITY bd_packet_module IS
 		s_axi_aclk     : IN std_logic;
 		s_axi_areset_n : IN std_logic;
 		--
-		s_axi_ro : OUT axi3ml_read_in_r;
-		s_axi_ri : IN axi3ml_read_out_r;
-		s_axi_wo : OUT axi3ml_write_in_r;
-		s_axi_wi : IN axi3ml_write_out_r;
-        LVDS_O_bd: OUT std_logic;
-		LVDS_I_bd: IN std_logic;
-	    LVDS_clk_bd : out std_logic;
-		LVDS_tristate_bd : out std_logic
+		s_axi_ro         : OUT axi3ml_read_in_r;
+		s_axi_ri         : IN axi3ml_read_out_r;
+		s_axi_wo         : OUT axi3ml_write_in_r;
+		s_axi_wi         : IN axi3ml_write_out_r;
+		LVDS_O_bd        : OUT std_logic;
+		LVDS_I_bd        : IN std_logic;
+		LVDS_clk_bd      : OUT std_logic;
+		LVDS_tristate_bd : OUT std_logic
 
 	);
 
 END ENTITY bd_packet_module;
 ARCHITECTURE RTL OF bd_packet_module IS
-    SIGNAL command_reg_M       : std_logic_vector(15 DOWNTO 0); -- Command Reg Master
-	SIGNAL command_reg_M_valid : std_logic;
-	SIGNAL data_reg_M          : std_logic_vector(15 DOWNTO 0); -- Data Reg Master
-    SIGNAL data_reg_M_out      : std_logic_vector(15 DOWNTO 0); -- Data Reg Master receive
-	SIGNAL data_reg_M_valid    : std_logic;
-	SIGNAL command_reg_S       : std_logic_vector(15 DOWNTO 0); -- Command Reg Slave
-	SIGNAL data_reg_S          : std_logic_vector(15 DOWNTO 0); -- Data Reg Slave
-	SIGNAL LVDS_data_test      : std_logic;
-	SIGNAL LVDS_clk_test       : std_logic;
+	SIGNAL command_reg_M            : std_logic_vector(15 DOWNTO 0); -- Command Reg Master
+	SIGNAL command_reg_M_valid      : std_logic;
+	SIGNAL data_reg_M               : std_logic_vector(15 DOWNTO 0); -- Data Reg Master
+	SIGNAL data_reg_M_out           : std_logic_vector(15 DOWNTO 0); -- Data Reg Master receive
+	SIGNAL data_reg_M_valid         : std_logic;
+	SIGNAL command_reg_S            : std_logic_vector(15 DOWNTO 0); -- Command Reg Slave
+	SIGNAL data_reg_S               : std_logic_vector(15 DOWNTO 0); -- Data Reg Slave
+	SIGNAL LVDS_data_test           : std_logic;
+	SIGNAL LVDS_clk_test            : std_logic;
 	ATTRIBUTE KEEP_HIERARCHY OF RTL : ARCHITECTURE IS "TRUE";
 	COMPONENT packet_layer_Master IS
 		GENERIC (
@@ -81,10 +81,10 @@ ARCHITECTURE RTL OF bd_packet_module IS
 			command_in       : IN std_logic_vector(COMMAND_LEN - 1 DOWNTO 0);
 			command_valid_in : IN std_logic;
 			------------- DATA IO channel ------------
-			LVDS_I    : IN std_logic;
-			LVDS_O    : OUT std_logic;
-			LVDS_clock : OUT std_logic;
-			LVDS_tristate   : out std_logic;
+			LVDS_I        : IN std_logic;
+			LVDS_O        : OUT std_logic;
+			LVDS_clock    : OUT std_logic;
+			LVDS_tristate : OUT std_logic;
 
 			------- Data channel
 			data_in        : IN std_logic_vector(DATA_LEN - 1 DOWNTO 0);
@@ -145,16 +145,14 @@ BEGIN
 		reset            => '0',
 		command_in       => command_reg_M,
 		command_valid_in => command_reg_M_valid,
-		LVDS_I          => LVDS_I_bd,
-		LVDS_O          => LVDS_O_bd,
+		LVDS_I           => LVDS_I_bd,
+		LVDS_O           => LVDS_O_bd,
 		LVDS_clock       => LVDS_clk_bd,
 		LVDS_tristate    => LVDS_tristate_bd,
 		data_in          => data_reg_M,
 		data_valid_in    => data_reg_M_valid,
 		data_out         => data_reg_M_out
 	);
-
-
 	-------------------------------------------------------------
 	----------------- AXI Lite Slave Process --------------------
 	-------------------------------------------------------------
@@ -214,29 +212,24 @@ BEGIN
 						state     := r_data_s;
 
 					WHEN r_data_s =>
-					arready_v := '0';         -- done with addr
+						arready_v := '0'; -- done with addr
 						------ ADD ADDRESS BASED CONDITIONS FOR COMMAND AND DATA REG
 						IF addr_v = x"40000008" THEN
-							rdata_v(31 downto 16)   := x"1212"; -- OUTPUT DATA REGISTER
-							rdata_v(15 downto 0)   := data_reg_M_out;
-							rresp_v   := "00";          -- okay
-						ELSIF addr_v = x"40000012"  THEN
-							rdata_v(15 downto 0)   := data_reg_S; -- OUTPUT DATA REGISTER
-							rdata_v(31 downto 16)   := x"1212";
-							rresp_v   := "00";       -- okay
+							rdata_v(31 DOWNTO 16) := x"1212"; -- OUTPUT DATA REGISTER
+							rdata_v(15 DOWNTO 0)  := data_reg_M_out;
+							rresp_v               := "00"; -- okay
+						ELSIF addr_v = x"40000012" THEN
+							rdata_v(15 DOWNTO 0)  := data_reg_S; -- OUTPUT DATA REGISTER
+							rdata_v(31 DOWNTO 16) := x"1212";
+							rresp_v               := "00"; -- okay
 						ELSE
-							rdata_v   := (others=>'0'); -- TEST DATA
-							rresp_v   := "00";        -- okay
+							rdata_v := (OTHERS => '0'); -- TEST DATA
+							rresp_v := "00";            -- okay
 						END IF;
 						IF s_axi_ri.rready = '1' THEN -- master ready
 							rvalid_v := '1';              -- data is valid
 							state    := idle_s;
 						END IF;
-
-						--  AWVALID ---> WVALID	 _	       BREADY   Master
-						--     \    --__ /`   \	  --__		/`
-						--	    \,  	/--__  \,     --_  /
-						--	 AWREADY     -> WREADY ---> BVALID	    Slave
 
 					WHEN w_addr_s =>
 						addr_v    := s_axi_wi.awaddr;
@@ -248,14 +241,14 @@ BEGIN
 						wready_v  := '1'; -- ready for data
 
 						IF s_axi_wi.wvalid = '1' THEN                       -- data transfer
-							IF addr_v = x"40000000" THEN                   -- command
+							IF addr_v = x"40000000" THEN                        -- command
 								command_reg_M       <= s_axi_wi.wdata(15 DOWNTO 0); -- command data
 								command_reg_M_valid <= '1';
 								wstrb_v := s_axi_wi.wstrb;
 								bresp_v := "00"; -- transfer OK
 								state   := w_resp_s;
 							ELSIF addr_v = x"40000004" THEN
-								data_reg_M <= s_axi_wi.wdata(15 DOWNTO 0); -- store data in INPUT_REG
+								data_reg_M       <= s_axi_wi.wdata(15 DOWNTO 0); -- store data in INPUT_REG
 								data_reg_M_valid <= '1';
 								wstrb_v := s_axi_wi.wstrb;
 								bresp_v := "00"; -- transfer OK
@@ -265,9 +258,9 @@ BEGIN
 								bresp_v := "00"; -- transfer OK
 								state   := w_resp_s;
 							END IF;
-						--ELSE
-						--	command_reg_M_valid <= '0';
-						--	data_reg_M_valid    <= '0';
+							--ELSE
+							--	command_reg_M_valid <= '0';
+							--	data_reg_M_valid    <= '0';
 						END IF;
 
 					WHEN w_resp_s =>
