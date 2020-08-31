@@ -6,5 +6,6 @@ The main idea behind scheduling is to ensure that high priority tasks get served
 `Scheduler_Layer/Scheduler_Master.vhd` : VHDL code for scheduling tasks (command and data words) and controlling internal FIFO banks as well as lower Master Packet layer to perform transactions based on service priority.
 `Scheduler_Layer/Scheduler_Master_tb.vhd` : VHDL testbench code for functional Unit tests. 
 ### Dependencies :- 
+The current version is tested on Lattice Diamond.
 - All files in ../PHY_Layer
 - All files in ../Packet_Layer
