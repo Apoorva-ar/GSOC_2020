@@ -3,7 +3,7 @@
 --	AXI Lite Interface for bidirectional Packet protocol Master
 --	Version 1.0
 --
---  Copyright (C) 2020 Apoorva Arora & Rahul Vyas
+--      Copyright (C) 2020 Apoorva Arora & Rahul Vyas
 --
 --	This program is free software: you can redistribute it and/or
 --	modify it under the terms of the GNU General Public License
@@ -54,7 +54,7 @@ ENTITY bd_packet_module IS
 
 END ENTITY bd_packet_module;
 ARCHITECTURE RTL OF bd_packet_module IS
-      SIGNAL command_reg_M       : std_logic_vector(15 DOWNTO 0); -- Command Reg Master
+        SIGNAL command_reg_M       : std_logic_vector(15 DOWNTO 0); -- Command Reg Master
 	SIGNAL command_reg_M_valid : std_logic;
 	SIGNAL data_reg_M          : std_logic_vector(15 DOWNTO 0); -- Data Reg Master
 	SIGNAL data_reg_M_valid    : std_logic;
@@ -155,7 +155,7 @@ BEGIN
 		command_out     => command_reg_S,
 		LVDS_IO         => LVDS_data_test,
 		LVDS_clock      => LVDS_clk_test,
-		data_in_S => (OTHERS => '0'),
+		data_in_S       => (OTHERS => '0'),
 		data_valid_in_S => '0',
 		data_out_S      => data_reg_S
 	);
