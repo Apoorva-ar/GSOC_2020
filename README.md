@@ -73,11 +73,7 @@ Following VHDL testbenches were used to perform software based unit tests of ind
 ### Running loopback test on ZYNQ.
 Following steps are followed for running loopback test on ZYNQ in order to perform hardware based functional verification.
 
-## Applications
 
-## Structure
-
-### Modules invovled
 
 
 
