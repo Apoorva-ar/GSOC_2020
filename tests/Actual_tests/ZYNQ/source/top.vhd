@@ -1217,16 +1217,16 @@ BEGIN
         );
 
     IOBUFDS_inst : IOBUFDS
-    GENERIC MAP(
-        DIFF_TERM    => FALSE,      -- Differential Termination (TRUE/FALSE)
-        IBUF_LOW_PWR => TRUE,       -- Low Power = TRUE, High Performance = FALSE 
-        IOSTANDARD   => "BLVDS_25", -- Specify the I/O standard
-        SLEW         => "SLOW")     -- Specify the output slew rate
-    PORT MAP(
-        O   => LVDS_input_buf,  -- Buffer output
-        IO  => LVDS_IO_top_p,   -- Diff_p inout (connect directly to top-level port) 
-        IOB => LVDS_IO_top_n,   -- Diff_n inout (connect directly to top-level port)
-        I   => LVDS_output_buf, -- Buffer input
-        T   => tristate_en      -- 3-state enable input, high=input, low=output
-    );
+        GENERIC MAP(
+            DIFF_TERM    => FALSE,      -- Differential Termination (TRUE/FALSE)
+            IBUF_LOW_PWR => TRUE,       -- Low Power = TRUE, High Performance = FALSE 
+            IOSTANDARD   => "BLVDS_25", -- Specify the I/O standard
+            SLEW         => "SLOW")     -- Specify the output slew rate
+        PORT MAP(
+            O   => LVDS_input_buf,  -- Buffer output
+            IO  => LVDS_IO_top_p,   -- Diff_p inout (connect directly to top-level port) 
+            IOB => LVDS_IO_top_n,   -- Diff_n inout (connect directly to top-level port)
+            I   => LVDS_output_buf, -- Buffer input
+            T   => tristate_en      -- 3-state enable input, high=input, low=output
+        );
 END RTL;
