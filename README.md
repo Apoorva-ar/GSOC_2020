@@ -101,6 +101,9 @@ The command `(16 bit)` : where `15th bit` (MSB) is write/read operation (`1`= Wr
 - Open linux terminal on ZYNQ PL and write `devmem2 0x40000000 w 0x00000121`. This will command the master to perform read transaction with 1 word transfer request from the virtual address `0x21`.
 - To read the data received by the Master in loopback mode write `devmem2 0x40000008 w`.
 
+#### Loop Back test - With MACHXO2 as Slave device
+
+
 
 
 
