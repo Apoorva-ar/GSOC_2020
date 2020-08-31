@@ -62,9 +62,6 @@ ARCHITECTURE RTL OF bd_packet_module IS
 	SIGNAL data_reg_S          : std_logic_vector(15 DOWNTO 0); -- Data Reg Slave
 	SIGNAL LVDS_data_test      : std_logic;
 	SIGNAL LVDS_clk_test       : std_logic;
-	signal data_in_reg_S       : std_logic_vector(15 DOWNTO 0);
-	signal data_in_valid_reg_S : std_logic;
-	signal data_out_M          : std_logic_vector(15 DOWNTO 0); -- Data Reg Master
 	ATTRIBUTE KEEP_HIERARCHY OF RTL : ARCHITECTURE IS "TRUE";
 	COMPONENT packet_layer_Master IS
 		GENERIC (
@@ -143,8 +140,7 @@ BEGIN
 		LVDS_IO          => LVDS_data_test,
 		LVDS_clock       => LVDS_clk_test,
 		data_in          => data_reg_M,
-		data_valid_in    => data_reg_M_valid,
-		data_out         => data_out_M
+		data_valid_in    => data_reg_M_valid
 	);
 
 	Packet_Layer_Slave_Component : packet_layer_slave
@@ -159,8 +155,8 @@ BEGIN
 		command_out     => command_reg_S,
 		LVDS_IO         => LVDS_data_test,
 		LVDS_clock      => LVDS_clk_test,
-		data_in_S       => data_in_reg_S,
-		data_valid_in_S => data_in_valid_reg_S,
+		data_in_S => (OTHERS => '0'),
+		data_valid_in_S => '0',
 		data_out_S      => data_reg_S
 	);
 
@@ -227,7 +223,7 @@ BEGIN
 						------ ADD ADDRESS BASED CONDITIONS FOR COMMAND AND DATA REG
 						IF addr_v = x"40000008" THEN
 							rdata_v(15 downto 0)   := command_reg_S; -- OUTPUT DATA REGISTER
-							rdata_v(31 downto 16)  := data_out_M;
+							rdata_v(31 downto 16)   := data_reg_S;
 							rresp_v   := "00";          -- okay
 						ELSIF addr_v = x"40000012"  THEN
 							rdata_v(15 downto 0)   := data_reg_S; -- OUTPUT DATA REGISTER
@@ -265,9 +261,7 @@ BEGIN
 								state   := w_resp_s;
 							ELSIF addr_v = x"40000004" THEN
 								data_reg_M <= s_axi_wi.wdata(15 DOWNTO 0); -- store data in INPUT_REG
-								data_in_reg_S <= s_axi_wi.wdata(31 DOWNTO 16);  -- input for slave register
 								data_reg_M_valid <= '1';
-								data_in_valid_reg_S <= '1';
 								wstrb_v := s_axi_wi.wstrb;
 								bresp_v := "00"; -- transfer OK
 								state   := w_resp_s;
@@ -284,7 +278,6 @@ BEGIN
 					WHEN w_resp_s =>
 						command_reg_M_valid <= '0';
 						data_reg_M_valid    <= '0';
-						--data_in_valid_reg_S <= '0';
 						wready_v := '0';              -- done with write
 						IF s_axi_wi.bready = '1' THEN -- master ready
 							bvalid_v := '1';              -- response valid
