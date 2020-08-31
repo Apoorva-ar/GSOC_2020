@@ -243,7 +243,7 @@ set obj [get_filesets sources_1]
 # Import local files from the original project
 set files [list \
  [file normalize "${origin_dir}/PHY_Data_path.vhd" ]\
- [file normalize "${origin_dir}PHY_Master.vhd" ]\
+ [file normalize "${origin_dir}/PHY_Master.vhd" ]\
  [file normalize "${origin_dir}/PHY_Master_Controller.vhd" ]\
  [file normalize "${origin_dir}/PHY_Slave.vhd" ]\
  [file normalize "${origin_dir}/PHY_Slave_Controller.vhd" ]\
