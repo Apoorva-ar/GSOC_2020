@@ -1,9 +1,8 @@
 ----------------------------------------------------------------------------
---  bd_packet_protocol.vhd
+--      bd_packet_protocol.vhd
 --	AXI Lite Interface for bidirectional Packet protocol Master
 --	Version 1.0
---
---  Copyright (C) 2020 Apoorva Arora & Rahul Vyas
+--      Copyright (C) 2020 Apoorva Arora & Rahul Vyas
 --
 --	This program is free software: you can redistribute it and/or
 --	modify it under the terms of the GNU General Public License
@@ -54,7 +53,7 @@ ENTITY bd_packet_module IS
 
 END ENTITY bd_packet_module;
 ARCHITECTURE RTL OF bd_packet_module IS
-      SIGNAL command_reg_M       : std_logic_vector(15 DOWNTO 0); -- Command Reg Master
+        SIGNAL command_reg_M       : std_logic_vector(15 DOWNTO 0); -- Command Reg Master
 	SIGNAL command_reg_M_valid : std_logic;
 	SIGNAL data_reg_M          : std_logic_vector(15 DOWNTO 0); -- Data Reg Master
 	SIGNAL data_reg_M_valid    : std_logic;
@@ -214,7 +213,7 @@ BEGIN
 
 						--  ARVALID ---> RVALID		Master
 						--     \	 /`   \
-						--	    \,	/      \,
+						--	 \,	/      \,
 						--	 ARREADY     RREADY	    Slave
 
 					WHEN r_addr_s =>
@@ -226,26 +225,26 @@ BEGIN
 					arready_v := '0';         -- done with addr
 						------ ADD ADDRESS BASED CONDITIONS FOR COMMAND AND DATA REG
 						IF addr_v = x"40000008" THEN
-							rdata_v(15 downto 0)   := command_reg_S; -- OUTPUT DATA REGISTER
-							rdata_v(31 downto 16)  := data_out_M;
+							rdata_v(15 downto 0)   := command_reg_S; -- Slave command_out
+							rdata_v(31 downto 16)  := data_out_M;    -- Master data_out
 							rresp_v   := "00";          -- okay
 						ELSIF addr_v = x"40000012"  THEN
-							rdata_v(15 downto 0)   := data_reg_S; -- OUTPUT DATA REGISTER
-							rdata_v(31 downto 16)   := x"1212";
+							rdata_v(15 downto 0)   := data_reg_S;    -- Slave data_out
+							rdata_v(31 downto 16)   := x"1212";      -- Constant
 							rresp_v   := "00";       -- okay
 						ELSE
-							rdata_v   := (others=>'0'); -- TEST DATA
+							rdata_v   := (others=>'0'); 
 							rresp_v   := "00";        -- okay
 						END IF;
 						IF s_axi_ri.rready = '1' THEN -- master ready
-							rvalid_v := '1';              -- data is valid
+							rvalid_v := '1';      -- data is valid
 							state    := idle_s;
 						END IF;
 
-						--  AWVALID ---> WVALID	 _	       BREADY   Master
-						--     \    --__ /`   \	  --__		/`
-						--	    \,  	/--__  \,     --_  /
-						--	 AWREADY     -> WREADY ---> BVALID	    Slave
+						--  AWVALID ---> WVALID	 _	      BREADY   Master
+						--     \    --__ /`   \	  --__	    /`
+						--	 \,  	/--__  \,     --_  /
+						--	 AWREADY     -> WREADY ---> BVALID	  Slave
 
 					WHEN w_addr_s =>
 						addr_v    := s_axi_wi.awaddr;
@@ -256,16 +255,16 @@ BEGIN
 						awready_v := '0'; -- done with addr
 						wready_v  := '1'; -- ready for data
 
-						IF s_axi_wi.wvalid = '1' THEN                       -- data transfer
-							IF addr_v = x"40000000" THEN                   -- command
-								command_reg_M       <= s_axi_wi.wdata(15 DOWNTO 0); -- command data
+						IF s_axi_wi.wvalid = '1' THEN                       
+							IF addr_v = x"40000000" THEN                  
+								command_reg_M       <= s_axi_wi.wdata(15 DOWNTO 0); -- Latch_in Master command word
 								command_reg_M_valid <= '1';
 								wstrb_v := s_axi_wi.wstrb;
 								bresp_v := "00"; -- transfer OK
 								state   := w_resp_s;
 							ELSIF addr_v = x"40000004" THEN
-								data_reg_M <= s_axi_wi.wdata(15 DOWNTO 0); -- store data in INPUT_REG
-								data_in_reg_S <= s_axi_wi.wdata(31 DOWNTO 16);  -- input for slave register
+								data_reg_M <= s_axi_wi.wdata(15 DOWNTO 0);      -- Latch_in Master data_in 
+								data_in_reg_S <= s_axi_wi.wdata(31 DOWNTO 16);  -- Latch_in Slave data_in
 								data_reg_M_valid <= '1';
 								data_in_valid_reg_S <= '1';
 								wstrb_v := s_axi_wi.wstrb;
