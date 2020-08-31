@@ -74,7 +74,6 @@
 #    "/home/osboxes/projects/VIVADO_projects/AXIOM_Master_LVDS/ZYNQ_LVDS_Master/source/scan_event.vhd"
 #    "/home/osboxes/projects/VIVADO_projects/AXIOM_Master_LVDS/ZYNQ_LVDS_Master/source/scan_hdmi.vhd"
 #    "/home/osboxes/projects/VIVADO_projects/AXIOM_Master_LVDS/ZYNQ_LVDS_Master/source/sync_delay.vhd"
-#    "/home/osboxes/projects/VIVADO_projects/AXIOM_Master_LVDS/ZYNQ_LVDS_Master/source/top_bd_packet.vhd"
 #    "/home/osboxes/projects/VIVADO_projects/AXIOM_Master_LVDS/ZYNQ_LVDS_Master/source/addr_dbuf.vhd"
 #    "/home/osboxes/projects/VIVADO_projects/AXIOM_Master_LVDS/ZYNQ_LVDS_Master/source/axi_split.vhd"
 #    "/home/osboxes/projects/VIVADO_projects/AXIOM_Master_LVDS/ZYNQ_LVDS_Master/source/axi_split4.vhd"
