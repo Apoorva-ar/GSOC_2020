@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------------
---  bd_packet_protocol.vhd
+--      bd_packet_protocol.vhd
 --	AXI Lite Interface for bidirectional Packet protocol Master
 --	Version 1.0
 --
