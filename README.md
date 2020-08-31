@@ -19,7 +19,8 @@ The main idea behind scheduling is to ensure that high priority tasks get served
 - Based on the priority of the service mentioned in the scheduler, the data latch FSM stores the command word in respective priority FIFO and the subsequent data is further stored in relevant FIFO based on the priority. 
 - The master user FSM concurrently checks availability of data in command FIFOs based on priority (hence the command from higher priority is parsed first). After extracting and latching in the command, the burst information, read/write transaction information as well as data (from relevant FIFO) is passed on the packet layer to continue the transaction. </br>
 
-`Scheduler_Master.vhd` : VHDL code for scheduling tasks (command and data words) and controlling internal FIFO banks as well as lower Master Packet layer to perform transactions based on service priority.
+`Scheduler_Layer/Scheduler_Master.vhd` : VHDL code for scheduling tasks (command and data words) and controlling internal FIFO banks as well as lower Master Packet layer to perform transactions based on service priority.
+`Scheduler_Layer/Scheduler_Master_tb.vhd` : VHDL testbench code for functional Unit tests. 
 #### Packet Layer
 This layer accepts commands from upper layers namely scheduling layer in order to control data flow of the physical layer.</br>
 - The command contain virtual address, burst length and read/write information.
@@ -28,9 +29,11 @@ data flow between master and slave devices is synchronised and controlled. </br>
 - The master packet layer FSM decodes the command in order to generate/receive data packets (burst).
 - The slave packet layer on the other hand reads command packet and then demands/produces data from/to the slave peripheral. </br>
 
-`Packet_Layer_Master.vhd` : VHDL code for generating/receiving packets as well as controlling read/write transactions as well as burst cycle of the lower PHY Master layer.
+`Packet_Layer/Packet_Layer_Master.vhd` : VHDL code for generating/receiving packets as well as controlling read/write transactions as well as burst cycle of the lower PHY Master layer. </br>
 
-`Packet_Layer_Slave.vhd` : VHDL code for generating/receving packets as well as controlling read/write transactions as well as burst cycle of the lower PHY Slave layer.
+`Packet_Layer/Packet_Layer_Slave.vhd` : VHDL code for generating/receving packets as well as controlling read/write transactions as well as burst cycle of the lower PHY Slave layer. </br>
+
+`Packet_Layer/Packet_Layer_tb.vhd` : VHDL testbench code for functional Unit tests. 
 
 #### PHY Layer
 This layer acts as bidirectional SERDES for the user. There are two major modules involved mainly master and slave. </br>
@@ -38,13 +41,13 @@ This layer acts as bidirectional SERDES for the user. There are two major module
 Both master as well as slave FSMs are initiated on write/read transaction enable signals from upper layers (in this case the packet layer). Hence, the upper layer has full control over the SERDES in terms of avoiding any possible cross-talks.</br>
 - Xilinx primitive `IOBUFDS` is used for connecting single ended bidirectional port of the design with differential LVDS IO physical port of the ZYNQ_SoC (Microzed-7Z020)</br>
 
-`PHY_Master_controller.vhd` : VHDL Controller for controlling PHY Master </br>
-  - `PHY_Master.vhd: VHDL` code for Master PHY layer -> SERDES that controls clock as well as data. </br>
-    - `PHY_Data_Path.vhd` : VHDL code for controlling SERDES data path.</br>
-    - `PHY_sclk_gen.vhd`  : VHDL code for controlling LVDS clock.</br>
+`PHY_Layer/PHY_Master_controller.vhd` : VHDL Controller for controlling PHY Master </br>
+  - `PHY_Layer/PHY_Master.vhd: VHDL` code for Master PHY layer -> SERDES that controls clock as well as data. </br>
+    - `PHY_Layer/PHY_Data_Path.vhd` : VHDL code for controlling SERDES data path.</br>
+    - `PHY_Layer/PHY_sclk_gen.vhd`  : VHDL code for controlling LVDS clock.</br>
     
-`PHY_Slave_Controller.vhd` : VHDL Controller for controlling PHY Slave  </br>
-  - `PHY_Slave.vhd: VHDL` code for Slave PHY layer -> Slave SERDES. </br>
+`PHY_Layer/PHY_Slave_Controller.vhd` : VHDL Controller for controlling PHY Slave  </br>
+  - `PHY_Layer/PHY_Slave.vhd: VHDL` code for Slave PHY layer -> Slave SERDES. </br>
 
 ## Running the application on Apertus AXIOM Beta
 The application runs on ZYNQ-SOC as Master and MACHXO2 as Slave. In order to access as well as flash the bitstreams on the ZYNQ-PL(Programmable logic) as well as MACHXO2 from linux running on ZYNQ-PS. Following steps are followed.
