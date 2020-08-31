@@ -1,9 +1,9 @@
-#### ZYNQ as LVDS Maser
+# ZYNQ as LVDS Maser
 Master module is flashed onto ZYNQ PL in order to perform loopback tests </br>
 This tests performs write transaction (Master--> Slave) and then read transaction (Slave --> Master --> AXI) over packet layer. </br>
 The command `(16 bit)` : where `15th bit` (MSB) is write/read operation (`1`= Write/ `0` = Read); `Bit (14 - 8)` is the burst length; `Bits (7 - 0)` is the slave peripheral address.
 
-##### AXI based tests
+## AXI based tests
 - Inorder to perform this tests build the system using `/tests/Actual_tests/ZYNQ/ZYNQ_LVDS_Master.tcl` script.
 - Flash the `top.bit` file to the ZYNQ PL
 - Command is written at AXI address `0x40000000` on `bits (15 to 0)`.
