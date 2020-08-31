@@ -71,7 +71,9 @@ Access the terminal of linux running on ZYNQ-PL of AXIOM-Beta and run the follow
 ## Testing
 Following VHDL testbenches were used to perform software based unit tests of individual modules.
 ### Running loopback test on ZYNQ.
-Following steps are followed for running loopback test on ZYNQ in order to perform hardware based functional verification.
+Following steps are followed for running loopback test on ZYNQ in order to perform hardware based functional verification. </br>
+Two Major transactions were performed - Writing data to a virtual address at Slave and Reading data from a virtual address of Slave.
+
 
 
 
