@@ -210,8 +210,12 @@ BEGIN
                             state_transaction <= tx_transmit;
                         END IF;
                     ELSE
-                        data_valid_in_PHY <= '0'; -- lower the vallid input data flag for PHY controller
-                    END IF;
+                        data_valid_in_PHY <= '1';        -- raise the vallid input data flag for PHY controller
+                        IF write_ready_signal = '1' THEN -- if controller is ready to accept new data ("tx_ready_controller")
+                            -- write_tr_en_signal <= '1';       -- write transaction enable for master PHY controller
+                            data_in_PHY       <= (others=>'0'); -- latch in new data
+                            state_transaction <= tx_transmit;
+                        END IF;                    END IF;
                 WHEN tx_transmit =>
                     test_2 <= "0100";
                     IF cntr_burst = (burst_length - 1) THEN -- if burst length is equaal to byte counter
