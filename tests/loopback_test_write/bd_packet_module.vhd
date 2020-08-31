@@ -210,7 +210,7 @@ BEGIN
 
 						--  ARVALID ---> RVALID		Master
 						--     \	 /`   \
-						--	    \,	/      \,
+						--	 \,	/      \,
 						--	 ARREADY     RREADY	    Slave
 
 					WHEN r_addr_s =>
@@ -222,12 +222,12 @@ BEGIN
 					arready_v := '0';         -- done with addr
 						------ ADD ADDRESS BASED CONDITIONS FOR COMMAND AND DATA REG
 						IF addr_v = x"40000008" THEN
-							rdata_v(15 downto 0)   := command_reg_S; -- OUTPUT DATA REGISTER
-							rdata_v(31 downto 16)   := data_reg_S;
+							rdata_v(15 downto 0)    := command_reg_S; -- Slave command_red output
+							rdata_v(31 downto 16)   := data_reg_S;    -- Slave Data_reg output
 							rresp_v   := "00";          -- okay
 						ELSIF addr_v = x"40000012"  THEN
-							rdata_v(15 downto 0)   := data_reg_S; -- OUTPUT DATA REGISTER
-							rdata_v(31 downto 16)   := x"1212";
+							rdata_v(15 downto 0)   := data_reg_S;      -- Slave Data_reg output
+							rdata_v(31 downto 16)   := x"1212";        -- Constant
 							rresp_v   := "00";       -- okay
 						ELSE
 							rdata_v   := (others=>'0'); -- TEST DATA
@@ -252,15 +252,15 @@ BEGIN
 						awready_v := '0'; -- done with addr
 						wready_v  := '1'; -- ready for data
 
-						IF s_axi_wi.wvalid = '1' THEN                       -- data transfer
-							IF addr_v = x"40000000" THEN                   -- command
-								command_reg_M       <= s_axi_wi.wdata(15 DOWNTO 0); -- command data
+						IF s_axi_wi.wvalid = '1' THEN                       
+							IF addr_v = x"40000000" THEN                  
+								command_reg_M       <= s_axi_wi.wdata(15 DOWNTO 0);  -- Latch_in Master command word
 								command_reg_M_valid <= '1';
 								wstrb_v := s_axi_wi.wstrb;
 								bresp_v := "00"; -- transfer OK
 								state   := w_resp_s;
 							ELSIF addr_v = x"40000004" THEN
-								data_reg_M <= s_axi_wi.wdata(15 DOWNTO 0); -- store data in INPUT_REG
+								data_reg_M <= s_axi_wi.wdata(15 DOWNTO 0);            -- Latch_in Master Data word
 								data_reg_M_valid <= '1';
 								wstrb_v := s_axi_wi.wstrb;
 								bresp_v := "00"; -- transfer OK
@@ -280,7 +280,7 @@ BEGIN
 						data_reg_M_valid    <= '0';
 						wready_v := '0';              -- done with write
 						IF s_axi_wi.bready = '1' THEN -- master ready
-							bvalid_v := '1';              -- response valid
+							bvalid_v := '1';      -- response valid
 							state    := idle_s;
 						END IF;
 				END CASE;
