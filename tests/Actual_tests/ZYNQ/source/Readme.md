@@ -10,3 +10,4 @@ The command `(16 bit)` : where `15th bit` (MSB) is write/read operation (`1`= Wr
 - Master received_data is read back on AXI address `0x40000008` with `bits(31 to 16)` being data received by the Master from Slave.
 - Open linux terminal on ZYNQ PL and write `devmem2 0x40000000 w 0x00000121`. This will command the master to perform read transaction with 1 word transfer request from the virtual address `0x21`.
 - To read the data received by the Master from Slave write `devmem2 0x40000008 w`.
+
